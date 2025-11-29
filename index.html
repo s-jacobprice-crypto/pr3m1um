@@ -6,131 +6,114 @@
 <title>JACOB'S ARCADE V2</title>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
-:root {
-  --neon-blue:#00e6ff;
-  --neon-green:#7cff00;
-  --bg-color:#05030a;
-  --bg-opacity:0.85;
-  --verse-bg-opacity:0.02;
-  --verse-text-color:#dffcff;
-  --game-bg-opacity:0.01;
-  --game-text-color:#00e6ff;
-  --star-opacity:0.25;
-}
-*{margin:0;padding:0;box-sizing:border-box;}
-html,body{height:100%;font-family:"Press Start 2P",Arial,sans-serif;color:#e6faff;background:var(--bg-color);overflow-x:hidden;}
-body::before,body::after{content:"";position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:-2;}
-body::before{background:radial-gradient(rgba(255,255,255,var(--star-opacity)) 1px,transparent 1px);background-size:2px 2px;}
-body::after{background:radial-gradient(circle at 20% 10%, rgba(0,255,200,0.06), transparent 10%),radial-gradient(circle at 80% 70%, rgba(0,150,255,0.04), transparent 10%);opacity:0.85;filter:blur(40px) saturate(120%);}
-header{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;background:rgba(0,0,0,0.25);border-bottom:1px solid rgba(255,255,255,0.04);backdrop-filter:blur(6px);}
-header .title{display:flex;align-items:center;gap:12px;}
-header .logo{width:48px;height:48px;background:linear-gradient(135deg,var(--neon-blue),var(--neon-green));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:bold;color:#001;}
-header h1{font-size:18px;color:var(--neon-blue);letter-spacing:1px;text-transform:uppercase;}
-header .live-clock{font-size:12px;color:var(--neon-green);text-transform:uppercase;}
-#customize-btn{position:fixed;top:16px;right:16px;z-index:1001;background:var(--neon-green);color:#000;font-size:12px;padding:6px 10px;border-radius:6px;cursor:pointer;border:none;box-shadow:0 0 8px var(--neon-green);}
-#customize-btn:hover{box-shadow:0 0 16px var(--neon-green);}
-main{display:flex;flex-wrap:wrap;padding:24px;gap:24px;}
-.left{flex:1 1 500px;}
-#custom-panel{position:fixed;top:0;right:-320px;width:300px;height:100%;background:rgba(0,0,0,var(--bg-opacity));padding:18px;border-radius:10px 0 0 10px;box-shadow:-4px 0 20px rgba(0,0,0,0.3);transition:right 0.3s ease;z-index:1000;}
-#custom-panel.open{right:0;}
-.clock{font-size:24px;color:var(--neon-green);margin-bottom:12px;text-transform:uppercase;}
-.next-update{font-size:10px;color:#dffcff;margin-bottom:14px;text-transform:uppercase;}
-.verse-box{background:rgba(255,255,255,var(--verse-bg-opacity));padding:16px;border-radius:8px;min-height:100px;margin-bottom:20px;border:1px solid rgba(255,255,255,0.04);}
-.verse-text{font-size:12px;color:var(--verse-text-color);line-height:1.4;text-transform:uppercase;}
-.verse-ref{font-size:10px;color:var(--neon-blue);margin-top:8px;text-align:right;opacity:0.85;text-transform:uppercase;}
-.games{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;}
-.game-card{background:rgba(255,255,255,var(--game-bg-opacity));padding:12px;border-radius:8px;text-align:center;border:1px solid rgba(255,255,255,0.03);transition: transform 0.15s, box-shadow 0.15s;}
-.game-card:hover{transform:translateY(-6px) scale(1.02);box-shadow:0 8px 24px rgba(0,200,255,0.06);}
-.card-buttons{margin-top:6px;display:flex;flex-wrap:wrap;gap:4px;justify-content:center;}
-.card-buttons button{font-size:10px;padding:4px 6px;cursor:pointer;border-radius:4px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--neon-blue);text-transform:uppercase;}
-footer{margin-top:32px;padding:18px;background:rgba(0,0,0,0.25);border-radius:8px;text-align:center;font-size:12px;color:#dffcff;text-transform:uppercase;}
-footer .socials a{margin:0 8px;color:var(--neon-blue);text-decoration:none;text-transform:uppercase;}
-.panel-section{margin-bottom:16px;}
-.panel-section label{display:block;margin-bottom:4px;font-size:12px;}
-.panel-section input[type=color]{width:100%;height:28px;border:none;border-radius:4px;}
-.panel-section input[type=checkbox]{margin-right:6px;}
-.panel-section input[type=text]{width:100%;padding:6px;border-radius:6px;border:1px solid rgba(255,255,255,0.1);background:rgba(0,0,0,0.2);color:#fff;font-size:12px;text-transform:uppercase;}
-@media(max-width:800px){#custom-panel{width:80%;}}
+:root{--neon-blue:#00e6ff;--neon-green:#7cff00;--bg-color:#05030a;--card-bg:rgba(255,255,255,0.02);--text:#e6faff}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;font-family:"Press Start 2P",Arial,sans-serif;color:var(--text);background:var(--bg-color);overflow-x:hidden}
+header{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;background:rgba(0,0,0,0.25);border-bottom:1px solid rgba(255,255,255,0.04);}
+.logo{width:48px;height:48px;background:linear-gradient(135deg,var(--neon-blue),var(--neon-green));border-radius:8px;display:flex;align-items:center;justify-content:center;color:#001}
+.games{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin:24px}
+.game-card{background:var(--card-bg);padding:12px;border-radius:8px;text-align:center;border:1px solid rgba(255,255,255,0.03);transition:transform .15s,box-shadow .15s}
+.game-card:hover{transform:translateY(-6px) scale(1.02);box-shadow:0 8px 24px rgba(0,200,255,0.06)}
+.card-buttons{margin-top:6px;display:flex;flex-wrap:wrap;gap:4px;justify-content:center}
+button{font-size:10px;padding:6px 8px;cursor:pointer;border-radius:6px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--neon-blue);text-transform:uppercase}
+#custom-panel{position:fixed;top:0;right:-360px;width:340px;height:100%;background:rgba(0,0,0,0.85);padding:18px;border-radius:10px 0 0 10px;box-shadow:-4px 0 20px rgba(0,0,0,0.5);transition:right .28s ease;z-index:1000}
+#custom-panel.open{right:0}
+.panel-section{margin-bottom:14px}
+.panel-section label{display:block;margin-bottom:6px;font-size:12px}
+input[type=color],input[type=text],select{width:100%;padding:8px;border-radius:6px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.02);color:var(--text)}
+.small{font-size:11px;padding:4px}
+.loading-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.75);z-index:2000;backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .18s}
+.loading-overlay.show{opacity:1;pointer-events:auto}
+.loading-box{width:min(560px,92%);background:rgba(255,255,255,0.03);padding:18px;border-radius:10px;text-align:center;border:1px solid rgba(255,255,255,0.06)}
+.loading-message{font-size:12px;margin-bottom:12px}
+.progress{height:8px;background:rgba(255,255,255,0.06);border-radius:8px;overflow:hidden}
+.progress > i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--neon-blue),var(--neon-green));transition:width .2s}
+.header-row{display:flex;gap:12px;align-items:center}
+.search{margin:18px}
+.favorite{cursor:pointer;opacity:.9}
+.banner{padding:8px;background:linear-gradient(90deg,rgba(0,0,0,0.4),rgba(255,255,255,0.02));text-align:center;margin:12px 24px;border-radius:8px}
+.footer{padding:12px;text-align:center;font-size:12px;opacity:.9}
+@media(max-width:880px){#custom-panel{width:86%}}
 </style>
 </head>
 <body>
-
 <header>
-<div class="title">
+<div class="header-row">
 <div class="logo">J²</div>
-<h1>JACOB'S ARCADE V2</h1>
+<div>
+<h1 style="font-size:16px;color:var(--neon-blue);letter-spacing:1px">JACOB'S ARCADE V2</h1>
+<div id="banner-text" style="font-size:10px;color:var(--neon-green);text-transform:uppercase">WELCOME</div>
 </div>
-<div class="live-clock" id="header-clock">00:00:00</div>
+</div>
+<div class="header-row">
+<div id="clock" style="font-size:12px;color:var(--neon-green);text-transform:uppercase">00:00:00</div>
+<button id="customize-btn">CUSTOMIZE</button>
+</div>
 </header>
 
-<button id="customize-btn">CUSTOMIZE</button>
+<div class="banner" id="custom-banner">Press PLAY to start a game — loading messages are chaotic!</div>
 
-<main>
-<div class="left">
-<div class="clock" id="live-time">00:00:00</div>
-<div class="next-update">NEXT UPDATE → <span id="next-update-time">CALCULATING...</span><br>(EVERY SATURDAY)</div>
-
-<div class="verse-box" aria-live="polite">
-<div class="verse-text" id="verse-text">LOADING VERSE…</div>
-<div class="verse-ref" id="verse-ref">—</div>
-</div>
-
-<div class="panel-section">
-<label>SEARCH GAMES</label>
-<input type="text" id="search-games" placeholder="TYPE TO SEARCH...">
-</div>
-
+<div style="display:flex;gap:18px">
+<div style="flex:1">
+<div class="search"><input id="search-games" type="text" placeholder="SEARCH GAMES..." style="width:100%;padding:8px;border-radius:6px"></div>
 <div class="games" id="games"></div>
 </div>
-
 <div id="custom-panel">
-<h3 style="color:var(--neon-green); font-size:14px; margin-bottom:12px;">CUSTOMIZE</h3>
+<h3 style="color:var(--neon-green);margin-bottom:12px">CUSTOMIZE</h3>
+<div class="panel-section">
+<label>Theme Presets</label>
+<select id="theme-preset">
+<option value="neon">Neon (default)</option>
+<option value="retro">Retro</option>
+<option value="sunset">Sunset</option>
+</select>
 </div>
-</main>
+<div class="panel-section">
+<label>Neon Color</label>
+<input type="color" id="neon-color" value="#00e6ff">
+</div>
+<div class="panel-section">
+<label>Background Color</label>
+<input type="color" id="bg-color" value="#05030a">
+</div>
+<div class="panel-section">
+<label>Grid Size</label>
+<select id="grid-size"><option value="small">Small cards</option><option value="medium" selected>Medium cards</option><option value="large">Large cards</option></select>
+</div>
+<div class="panel-section">
+<label><input type="checkbox" id="toggle-clock" checked> Show Live Clock</label>
+<label><input type="checkbox" id="toggle-verse" checked> Show Verse Box</label>
+</div>
+<div class="panel-section">
+<label>Custom Banner Text</label>
+<input type="text" id="banner-input" placeholder="Type a banner message...">
+<button id="save-banner" class="small">Save Banner</button>
+</div>
+<div class="panel-section">
+<label>Favorites</label>
+<div style="font-size:12px">Click the ⭐ on any game card to favorite it. Use the filter below.</div>
+<button id="show-faves" class="small">Show Favorites</button>
+<button id="clear-faves" class="small">Clear Favorites</button>
+</div>
+<div class="panel-section">
+<label>Reset to defaults</label>
+<button id="reset-prefs" class="small">RESET</button>
+</div>
+</div>
+</div>
 
-<footer>
-<div>FOLLOW ME —</div>
-<div class="socials">
-<a href="https://www.youtube.com/@jynxgotaim" target="_blank">YOUTUBE</a>
-<a href="https://www.twitch.tv/jjonzenn" target="_blank">TWITCH</a>
-<a href="https://www.tiktok.com/@fearjnyx_" target="_blank">TIKTOK</a>
+<div class="loading-overlay" id="loading-overlay" aria-hidden="true">
+<div class="loading-box" role="status" aria-live="polite">
+<div class="loading-message" id="loading-message">Loading...</div>
+<div class="progress"><i id="loading-bar"></i></div>
+<div style="margin-top:10px;font-size:11px;color:rgba(255,255,255,0.7)">This sometimes takes 0.5–3s (simulated)</div>
 </div>
-</footer>
+</div>
+
+<div class="footer">FOLLOW — YOUTUBE / TWITCH / TIKTOK</div>
 
 <script>
-document.addEventListener("DOMContentLoaded",()=>{
-
-function pad(n){return n.toString().padStart(2,'0');}
-function updateClock(){
-const now=new Date();
-const hh=pad(now.getHours()),mm=pad(now.getMinutes()),ss=pad(now.getSeconds());
-document.getElementById('live-time').textContent=`${hh}:${mm}:${ss}`;
-document.getElementById('header-clock').textContent=`${hh}:${mm}:${ss}`;
-}
-setInterval(updateClock,200);updateClock();
-
-function nextSaturday(from=new Date()){
-const dt=new Date(from);const day=dt.getDay();
-const days=((6-day)+7)%7||7;dt.setDate(dt.getDate()+days);dt.setHours(12,0,0,0);
-return dt;
-}
-document.getElementById('next-update-time').textContent=nextSaturday().toLocaleString();
-
-const VERSES=[
-{text:"FOR GOD SO LOVED THE WORLD THAT HE GAVE HIS ONLY SON",ref:"JOHN 3:16"},
-{text:"I CAN DO ALL THINGS THROUGH CHRIST WHO STRENGTHENS ME",ref:"PHILIPPIANS 4:13"},
-{text:"THE LORD IS MY SHEPHERD; I SHALL NOT WANT",ref:"PSALM 23:1"},
-];
-let verseIndex=0;
-function updateVerse(){
-const v=VERSES[verseIndex];
-document.getElementById('verse-text').textContent=v.text.toUpperCase();
-document.getElementById('verse-ref').textContent=v.ref.toUpperCase();
-verseIndex=(verseIndex+1)%VERSES.length;
-}
-setInterval(updateVerse,1000);updateVerse();
-
-/* ⭐⭐ FIXED GAME FILE LIST ⭐⭐ */
+// ----------------- CORE DATA -----------------
 const GAME_FILES = [
 "1v1lol.html",
 "amanda.html",
@@ -174,36 +157,350 @@ const GAME_FILES = [
 "supreme-duelists.html"
 ];
 
-const gamesDiv=document.getElementById('games');
-GAME_FILES.forEach(fname=>{
-const card=document.createElement('div');
-card.className='game-card';
-const title=fname.replace(/\.html$/,'').toUpperCase();
-card.innerHTML=`<div>${title}</div>
-<div class="card-buttons">
-<button onclick="window.location='${fname}'">PLAY</button>
-<button onclick="window.open('${fname}','_blank')">ABOUT:BLANK</button>
-<button onclick="fetch('${fname}').then(r=>r.text()).then(t=>{const blob=new Blob([t],{type:'text/html'});window.open(URL.createObjectURL(blob),'_blank');})">BLOB LINK</button>
-<button onclick="document.body.requestPointerLock()">LOCK CURSOR</button>
-</div>`;
-gamesDiv.appendChild(card);
+// ----------------- LOADING MESSAGES (200+) -----------------
+const LOADING_MESSAGES = [
+"Loading... bruh the hamster fell off the wheel",
+"Game is booting up... it’s lagging like your WiFi",
+"Hold on, the pixels are arguing again",
+"Loading... your PC is crying but it’ll be okay",
+"Bringing snacks for the CPU",
+"Summoning the joystick spirits",
+"Polishing the high scores",
+"Tightening sprites' shoelaces",
+"Applying duct tape to the physics engine",
+"Feeding the binary hamsters",
+"Charging the fun capacitor",
+"Warming up the magenta pixels",
+"Checking for missing semicolons",
+"Negotiating with the browser for extra RAM",
+"Borrowing energy from Pluto",
+"Asking the clouds for frames per second",
+"Whispering to the WASM gods",
+"Convincing the fonts to cooperate",
+"Debugging with a rubber chicken",
+"Loading... the snail courier is almost there",
+"Tuning the retro synths",
+"Infusing code with extra vibes",
+"Making sure the hero has a cool hat",
+"Applying anti-glitch stickers",
+"Rebooting the imagination module",
+"Searching for lost pixels",
+"Shouting encouragement at the CPU",
+"Packing parachutes for sprites",
+"Latent meme retrieval in progress",
+"Adjusting gravity to moderate",
+"Upgrading the fun meter to max",
+"Casting spell: 'Smooth Frame'",
+"Collecting invisible coins",
+"Polishing controller ports",
+"Assembling level blocks from moon dust",
+"Inviting friendly NPCs to warm up",
+"Encrypting the secret handshake",
+"Feeding the audio driver",
+"Practicing victory dances",
+"Smoothing collision edges",
+"Loading... locating the cheat codes (jk)",
+"Ordering virtual pizza for the devs",
+"Checking if the cat unplugged the server",
+"Stealing power from the sun (temporarily)",
+"Waking up the boss fight slowly",
+"Replacing pixels with premium pixels",
+"Herding stray sprites back on stage",
+"Repairing the silicon backbone",
+"Testing jump physics with a frog",
+"Polishing the coin animations",
+"Summoning a tiny loading wizard",
+"Configuring the 'epic' variable",
+"Searching for the 'fun' constant",
+"Calibrating danger meter",
+"Counting to 3, 2, 1... almost",
+"Temporarily upgrading to awesome mode",
+"Adjusting soundtrack bpm",
+"Cleaning up leftover debug confetti",
+"Rewiring the joy of play",
+"Distributing extra lives fairly",
+"Enforcing the 'no lag' policy",
+"Feeding pixels to the color wheel",
+"Consulting the sacred game manual",
+"Greasing the gears of destiny",
+"Tuning audio waves for maximum thump",
+"Sending a carrier pigeon to the server",
+"Reticulating splines... wait what?",
+"Optimizing fun-per-second ratio",
+"Translating sprites into good moods",
+"Checking for rogue easter eggs",
+"Loading nostalgia engines",
+"Turning the volume down for dramatic effect",
+"Asking the database to be brave",
+"Polishing leaderboards until they shine",
+"Warming up the victory music",
+"Checking if the user is smiling yet",
+"Counting the number of pixels ironically",
+"Applying anti-boredom patch",
+"Consulting the oracle for level order",
+"Initiating confetti sequence (standby)",
+"Retrieving the developer's lost keys",
+"Charging the warp drive slowly",
+"Giving the hero a temporary cape",
+"Spawning a friendly duck for morale",
+"Testing a new game over sound (oof)",
+"Censoring harsh boss language",
+"Setting difficulty to 'just right'",
+"Running background tickle algorithm",
+"Contacting alternate dimension for textures",
+"Sharpening the pixel swords",
+"Ensuring the coins are shiny",
+"Decorating the main menu with sparkles",
+"Calling the sprite stylist",
+"Handing out tiny power-ups to code",
+"Looping the theme song twice",
+"Counting backwards from infinity",
+"Rearranging stars for better aesthetics",
+"Wiring dreams into the renderer",
+"Consulting a fortune cookie for hints",
+"Asking permission to be awesome",
+"Refilling the 'epicness' tank",
+"Applying a generous coat of polish",
+"Calibrating jumps to feel satisfying",
+"Checking for imposter sprites",
+"Injecting caffeine into the main loop",
+"Replacing boring textures with jazz",
+"Testing if gravity is optional",
+"Feeding the AI compliments",
+"Polishing buttons until they gleam",
+"Throwing confetti at success probability",
+"Recruiting a minor god of glitches",
+"Installing fun drivers (v1.0)",
+"Ordering spare lives from Amazon",
+"Adjusting pixel brightness for dramatic flare",
+"Upgrading hero with temporary mustache",
+"Training enemies to be polite",
+"Checking if the keyboard is awake",
+"Summoning tiny hamsters for RNG",
+"Applying 'do not crash' sticker",
+"Hugging the nearest sprite for courage",
+"Loading... please don't refresh",
+"Updating mood to 'excited'",
+"Polishing the joystick until it squeaks",
+"Installing patch: 'less rage'",
+"Removing suspicious lag molecules",
+"Attaching a cape to the enemy (why not)",
+"Counting to 7 and skipping 3",
+"Borrowing extra frames from the future",
+"Telling a joke to the renderer",
+"Fluffing the cloud sprites",
+"Rearranging level tiles politely",
+"Charging the 'fun' battery to 37%",
+"Applying realistic but fun physics",
+"Collecting applause from the audience",
+"Aligning the stars for perfect frames",
+"Procuring a tiny umbrella for sprites",
+"Removing leftover debug snack wrappers",
+"Training the soundtrack for tempo changes",
+"Applying bandaid to the boss fight",
+"Asking the code to take a deep breath",
+"Hiding a surprise behind a block",
+"Attaching googly eyes to the main menu",
+"Synchronizing background dancers",
+"Preparing the final dramatic drum roll",
+"Filling map with small mysteries",
+"Adjusting coin magnetism slightly",
+"Replacing placeholder text with passion",
+"Calibrating the 'oof' sound for maximum effect",
+"Installing new smiles per minute algorithm",
+"Testing if the level smells good (jk)",
+"Giving the protagonist a motivational speech",
+"Tuning the bounce of trampolines",
+"Encouraging enemies to be slightly friendlier",
+"Wrapping the game in pixels of joy",
+"Stealthily slipping in extra lives",
+"Hoping the debug fairies show up",
+"Feeding the audio mixer with optimism",
+"Applying a sprinkle of chaos (careful)",
+"Optimizing the 'yay' sounds",
+"Checking if gravity wants a day off",
+"Tucking the save file in safely",
+"Polishing the end-screen applause",
+"Searching for hidden skill trees",
+"Applying a tiny sparkle to the HUD",
+"Listening for applause from your keyboard",
+"Summoning a background drummer",
+"Assembling the intro cutscene slowly",
+"Warming up the nostalgia generator",
+"Calibrating pixel-to-smile ratio",
+"Recommending a snack break just in case",
+"Turning on the 'good vibes' toggle",
+"Counting the frames with affection",
+"Hiding easter eggs in the code comments",
+"Collecting all the little wows",
+"Doing a small dance while loading",
+"Searching the attic for extra sprites",
+"Filling the sky with tiny comets",
+"Checking for friendly clouds",
+"Polishing controller grips for comfort",
+"Wrapping up and handing it to you",
+"One moment while we summon the fun!"
+];
+
+// ----------------- UTILS -----------------
+function randFrom(arr){return arr[Math.floor(Math.random()*arr.length)]}
+function wait(ms){return new Promise(r=>setTimeout(r,ms))}
+
+// ----------------- PERSISTENCE -----------------
+const prefs = {
+ neon: localStorage.getItem('pref-neon') || '#00e6ff',
+ bg: localStorage.getItem('pref-bg') || '#05030a',
+ banner: localStorage.getItem('pref-banner') || 'Welcome to the arcade!',
+ grid: localStorage.getItem('pref-grid') || 'medium',
+ showClock: localStorage.getItem('pref-clock')==='false'?false:true,
+ showVerse: localStorage.getItem('pref-verse')==='false'?false:true,
+ favs: JSON.parse(localStorage.getItem('pref-favs')||'[]')
+}
+
+// ----------------- RENDERING -----------------
+const gamesDiv = document.getElementById('games');
+function buildCard(fname){
+ const card = document.createElement('div');
+ card.className='game-card';
+ const title = fname.replace(/\.html$/,'').replace(/[-\.]/g,' ').toUpperCase();
+ const id = fname;
+ const star = document.createElement('span');
+ star.innerHTML = prefs.favs.includes(id)?'⭐':'☆';
+ star.className='favorite';
+ star.title='Toggle favorite';
+ star.style.marginLeft='6px';
+ star.onclick = (e)=>{e.stopPropagation(); toggleFav(id); star.innerHTML = prefs.favs.includes(id)?'⭐':'☆'};
+ card.innerHTML = `<div style="font-size:12px">${title}</div>`;
+ const btns = document.createElement('div'); btns.className='card-buttons';
+ const play = document.createElement('button'); play.textContent='PLAY';
+ play.onclick = ()=> playGame(id);
+ const openBlank = document.createElement('button'); openBlank.textContent='ABOUT:BLANK';
+ openBlank.onclick = ()=> window.open(id,'_blank');
+ const blob = document.createElement('button'); blob.textContent='BLOB LINK';
+ blob.onclick = ()=> fetch(id).then(r=>r.text()).then(t=>{const blob2=new Blob([t],{type:'text/html'});window.open(URL.createObjectURL(blob2),'_blank')});
+ btns.append(play,openBlank,blob);
+ card.appendChild(btns);
+ card.appendChild(star);
+ return card;
+}
+
+function renderGames(filter=''){
+ gamesDiv.innerHTML='';
+ let list = GAME_FILES.slice();
+ if(filter==='favs') list = list.filter(x=>prefs.favs.includes(x));
+ list = list.filter(f=>f.toLowerCase().includes(filter==='favs'? '': filter.toLowerCase()));
+ list.forEach(f=> gamesDiv.appendChild(buildCard(f)));
+ applyGrid();
+}
+
+// ----------------- FAVORITES -----------------
+function toggleFav(id){
+ if(!prefs.favs.includes(id)) prefs.favs.push(id); else prefs.favs = prefs.favs.filter(x=>x!==id);
+ localStorage.setItem('pref-favs',JSON.stringify(prefs.favs));
+}
+
+// ----------------- LOADING + PLAY -----------------
+const overlay = document.getElementById('loading-overlay');
+const msgEl = document.getElementById('loading-message');
+const bar = document.getElementById('loading-bar');
+async function playGame(filename){
+ overlay.classList.add('show'); overlay.setAttribute('aria-hidden','false');
+ const randomMsg = randFrom(LOADING_MESSAGES);
+ msgEl.textContent = randomMsg;
+ // animate bar
+ let pct = 0; bar.style.width='0%';
+ const duration = 800 + Math.random()*2200; // 0.8 - 3s
+ const start = Date.now();
+ while(Date.now()-start < duration){
+   const t = (Date.now()-start)/duration;
+   pct = Math.min(100, Math.floor( (Math.sin(t*Math.PI/2)*0.9 + t*0.1) * 100));
+   bar.style.width = pct + '%';
+   await wait(80);
+ }
+ bar.style.width='100%';
+ // small pause to show 100%
+ await wait(200);
+ overlay.classList.remove('show'); overlay.setAttribute('aria-hidden','true');
+ // finally open the game
+ window.open(filename,'_blank');
+}
+
+// ----------------- CUSTOMIZATION BEHAVIOR -----------------
+const customizeBtn = document.getElementById('customize-btn');
+const customPanel = document.getElementById('custom-panel');
+customizeBtn.addEventListener('click', (e)=>{e.stopPropagation(); customPanel.classList.toggle('open')});
+document.addEventListener('click', ()=> customPanel.classList.remove('open'));
+
+// controls
+const neonInput = document.getElementById('neon-color');
+const bgInput = document.getElementById('bg-color');
+const preset = document.getElementById('theme-preset');
+const gridSize = document.getElementById('grid-size');
+const toggleClock = document.getElementById('toggle-clock');
+const toggleVerse = document.getElementById('toggle-verse');
+const bannerInput = document.getElementById('banner-input');
+const saveBanner = document.getElementById('save-banner');
+const showFaves = document.getElementById('show-faves');
+const clearFaves = document.getElementById('clear-faves');
+const resetPrefs = document.getElementById('reset-prefs');
+
+neonInput.addEventListener('input', ()=>{document.documentElement.style.setProperty('--neon-blue', neonInput.value); localStorage.setItem('pref-neon',neonInput.value)});
+bgInput.addEventListener('input', ()=>{document.documentElement.style.setProperty('--bg-color', bgInput.value); document.body.style.background = bgInput.value; localStorage.setItem('pref-bg',bgInput.value)});
+
+preset.addEventListener('change', ()=>{
+ const v = preset.value;
+ if(v==='neon'){ neonInput.value='#00e6ff'; bgInput.value='#05030a'; }
+ if(v==='retro'){ neonInput.value='#ff6ec7'; bgInput.value='#101013'; }
+ if(v==='sunset'){ neonInput.value='#ff9a3c'; bgInput.value='#201220'; }
+ neonInput.dispatchEvent(new Event('input')); bgInput.dispatchEvent(new Event('input'));
 });
 
-const searchInput=document.getElementById('search-games');
-searchInput.addEventListener('input',()=>{
-const query=searchInput.value.toLowerCase();
-document.querySelectorAll('.game-card').forEach(card=>{
-card.style.display=card.textContent.toLowerCase().includes(query)?'block':'none';
-});
-});
+gridSize.addEventListener('change', applyGrid);
+function applyGrid(){
+ const g = gridSize.value;
+ if(g==='small') gamesDiv.style.gridTemplateColumns='repeat(auto-fill,minmax(140px,1fr))';
+ if(g==='medium') gamesDiv.style.gridTemplateColumns='repeat(auto-fill,minmax(180px,1fr))';
+ if(g==='large') gamesDiv.style.gridTemplateColumns='repeat(auto-fill,minmax(240px,1fr))';
+ localStorage.setItem('pref-grid',g);
+}
 
-const btn=document.getElementById('customize-btn');
-const panel=document.getElementById('custom-panel');
-btn.addEventListener('click',(e)=>{e.stopPropagation();panel.classList.toggle('open');});
-panel.addEventListener('click',(e)=>{e.stopPropagation();});
-document.addEventListener('click',()=>{panel.classList.remove('open');});
+saveBanner.addEventListener('click', ()=>{const t=bannerInput.value.trim(); if(t) {document.getElementById('custom-banner').textContent = t; localStorage.setItem('pref-banner',t);}});
+showFaves.addEventListener('click', ()=> renderGames('favs'));
+clearFaves.addEventListener('click', ()=>{prefs.favs=[]; localStorage.setItem('pref-favs','[]'); renderGames();});
+resetPrefs.addEventListener('click', ()=>{localStorage.clear(); location.reload();});
 
-});
+// ----------------- SEARCH -----------------
+const searchInput = document.getElementById('search-games');
+searchInput.addEventListener('input', ()=>{renderGames(searchInput.value)});
+
+// ----------------- CLOCK & VERSE -----------------
+function pad(n){return n.toString().padStart(2,'0')}
+function updateClock(){const now=new Date();document.getElementById('clock').textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`}
+setInterval(updateClock,1000); updateClock();
+
+// Verse box is optional - create if preference
+let verseBox = null;
+if(prefs.showVerse){ verseBox = document.createElement('div'); verseBox.className='banner'; verseBox.style.margin='12px 24px'; verseBox.style.fontSize='11px'; verseBox.textContent = 'THE LORD IS MY SHEPHERD; I SHALL NOT WANT - PSALM 23:1'; document.querySelector('body').insertBefore(verseBox, document.querySelector('.footer'))}
+
+// show/hide toggles
+toggleClock.checked = prefs.showClock; toggleVerse.checked = prefs.showVerse;
+toggleClock.addEventListener('change', ()=>{localStorage.setItem('pref-clock', toggleClock.checked); document.getElementById('clock').style.display = toggleClock.checked? 'block':'none'});
+toggleVerse.addEventListener('change', ()=>{localStorage.setItem('pref-verse', toggleVerse.checked); if(toggleVerse.checked && !verseBox){verseBox = document.createElement('div'); verseBox.className='banner'; verseBox.style.margin='12px 24px'; verseBox.style.fontSize='11px'; verseBox.textContent='THE LORD IS MY SHEPHERD; I SHALL NOT WANT - PSALM 23:1'; document.querySelector('body').insertBefore(verseBox, document.querySelector('.footer'))} else if(!toggleVerse.checked && verseBox){verseBox.remove(); verseBox=null}});
+
+// ----------------- INIT -----------------
+(function init(){
+ // apply prefs
+ document.documentElement.style.setProperty('--neon-blue', prefs.neon);
+ document.body.style.background = prefs.bg;
+ neonInput.value = prefs.neon; bgInput.value = prefs.bg; bannerInput.value = prefs.banner; document.getElementById('custom-banner').textContent = prefs.banner;
+ gridSize.value = prefs.grid; applyGrid();
+ // render games
+ renderGames();
+})();
+
+// ----------------- keyboard shortkeys (fun) -----------------
+document.addEventListener('keydown', (e)=>{ if(e.key==='f'){ renderGames('favs') } if(e.key==='/'){ searchInput.focus() } });
+
 </script>
 </body>
 </html>
