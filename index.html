@@ -85,7 +85,6 @@ footer .socials a{margin:0 8px;color:var(--neon-blue);text-decoration:none;text-
 
 <div id="custom-panel">
 <h3 style="color:var(--neon-green); font-size:14px; margin-bottom:12px;">CUSTOMIZE</h3>
-<!-- Add customization options here -->
 </div>
 </main>
 
@@ -101,7 +100,6 @@ footer .socials a{margin:0 8px;color:var(--neon-blue);text-decoration:none;text-
 <script>
 document.addEventListener("DOMContentLoaded",()=>{
 
-// CLOCK
 function pad(n){return n.toString().padStart(2,'0');}
 function updateClock(){
 const now=new Date();
@@ -111,7 +109,6 @@ document.getElementById('header-clock').textContent=`${hh}:${mm}:${ss}`;
 }
 setInterval(updateClock,200);updateClock();
 
-// NEXT UPDATE
 function nextSaturday(from=new Date()){
 const dt=new Date(from);const day=dt.getDay();
 const days=((6-day)+7)%7||7;dt.setDate(dt.getDate()+days);dt.setHours(12,0,0,0);
@@ -119,12 +116,10 @@ return dt;
 }
 document.getElementById('next-update-time').textContent=nextSaturday().toLocaleString();
 
-// BIBLE VERSES (250+ placeholder)
 const VERSES=[
 {text:"FOR GOD SO LOVED THE WORLD THAT HE GAVE HIS ONLY SON",ref:"JOHN 3:16"},
 {text:"I CAN DO ALL THINGS THROUGH CHRIST WHO STRENGTHENS ME",ref:"PHILIPPIANS 4:13"},
 {text:"THE LORD IS MY SHEPHERD; I SHALL NOT WANT",ref:"PSALM 23:1"},
-// Add up to 250+ verses
 ];
 let verseIndex=0;
 function updateVerse(){
@@ -135,17 +130,48 @@ verseIndex=(verseIndex+1)%VERSES.length;
 }
 setInterval(updateVerse,1000);updateVerse();
 
-// GAMES with exact filenames
-const GAME_FILES=[
-"1v1.LoL.html","Amanda the Adventurer (1).html","Aquapark.io.html","Bad Parenting 1.html",
-"Baldi's Basics.html","Baseball Bros.html","Basket Bros.html","BitLife.html","Block Blast.html",
-"Bowmasters.html","BuildNow.gg.html","Clash Of Vikings.html","Cuphead (1).html","Do NOT Take This Cat Home.html",
-"Fears to Fathom_ Home Alone.html","Flip Master.html","Football Bros.html","Friday Night Funkin.html",
-"JustFall.lol.html","Kindergarten.html","Kindergarten 2.html","Kindergarten 3.html",
-"Minecraft 1.21.4.html","Retro Bowl.html","Run 1.html","Run 2.html","Run 3.html","Schoolboy Runaway.html",
-"Slither.io.html","Slope.html","Sonic Mania.html","Sonic the Hedgehog 2_ Community's Cut.html","Sonic the Hedgehog 3_ Angel Island Remastered.html",
-"Sonic.EXE.html","Steal Brainrot Online.html","Stickman Fight Ragdoll.html","Stickman Hook.html",
-"Subway Surfers_ Barcelona.html","Super Mario Bros.html","supreme-duelists.html"
+/* ⭐⭐ FIXED GAME FILE LIST ⭐⭐ */
+const GAME_FILES = [
+"1v1lol.html",
+"amanda.html",
+"aquapark.html",
+"bad-parenting-1.html",
+"baldis-basics.html",
+"baseball-bros.html",
+"basket-bros.html",
+"bitlife.html",
+"block-blast.html",
+"bowmasters.html",
+"buildnow.gg.html",
+"clash-of-vikings.html",
+"cuphead-1.html",
+"do-not-take-this-cat-home.html",
+"fears-to-fathom-home-alone.html",
+"flip-master.html",
+"football-bros.html",
+"friday-night-funkin.html",
+"justfall.lol.html",
+"kindergarten.html",
+"kindergarten-2.html",
+"kindergarten-3.html",
+"minecraft-1.21.4.html",
+"retro-bowl.html",
+"run-1.html",
+"run-2.html",
+"run-3.html",
+"schoolboy-runaway.html",
+"slither.io.html",
+"slope.html",
+"sonic-mania.html",
+"sonic-the-hedgehog-2-communitys-cut.html",
+"sonic-the-hedgehog-3-angel-island-remastered.html",
+"sonic.exe.html",
+"steal-brainrot-online.html",
+"stickman-fight-ragdoll.html",
+"stickman-hook.html",
+"subway-surfers-barcelona.html",
+"super-mario-bros.html",
+"supreme-duelists.html"
 ];
 
 const gamesDiv=document.getElementById('games');
@@ -163,7 +189,6 @@ card.innerHTML=`<div>${title}</div>
 gamesDiv.appendChild(card);
 });
 
-// SEARCH
 const searchInput=document.getElementById('search-games');
 searchInput.addEventListener('input',()=>{
 const query=searchInput.value.toLowerCase();
@@ -172,7 +197,6 @@ card.style.display=card.textContent.toLowerCase().includes(query)?'block':'none'
 });
 });
 
-// CUSTOMIZE PANEL
 const btn=document.getElementById('customize-btn');
 const panel=document.getElementById('custom-panel');
 btn.addEventListener('click',(e)=>{e.stopPropagation();panel.classList.toggle('open');});
