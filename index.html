@@ -56,6 +56,26 @@ input[type=color],input[type=text],select{width:100%;padding:8px;border-radius:6
 .auth-box{display:flex;flex-direction:column;gap:8px;align-items:center}
 .auth-box input{width:260px;padding:8px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:var(--text)}
 .note{font-size:10px;color:var(--muted);margin-top:8px;text-align:center}
+
+/* ---- Logged-in look (from screenshot) ---- */
+body.logged-in {
+  background: radial-gradient(circle at 10% 10%, rgba(0,230,255,0.03), transparent 8%),
+              radial-gradient(circle at 90% 80%, rgba(124,255,0,0.02), transparent 12%),
+              var(--bg-color);
+}
+body.logged-in header { padding: 22px 36px; }
+body.logged-in .logo { width:64px; height:64px; font-size:20px; border-radius:12px; box-shadow:0 8px 30px rgba(0,230,255,0.06) }
+body.logged-in h1 { font-size:20px; letter-spacing:2px }
+body.logged-in #deploy-proxy-btn{
+  top:18px; padding:12px 22px; font-size:13px; border-radius:14px; box-shadow:0 8px 36px rgba(0,230,255,0.08), 0 0 0 3px rgba(0,230,255,0.03) inset;
+}
+body.logged-in .search input{
+  padding:14px 18px; font-size:13px; border-radius:12px; background: rgba(0,0,0,0.45); border:1px solid rgba(0,230,255,0.06); color:var(--neon-blue);
+}
+body.logged-in .games { grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap:18px; margin:28px 36px; }
+body.logged-in .game-card{ border-radius:12px; padding:14px; background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(0,230,255,0.05); box-shadow: 0 6px 22px rgba(0,0,0,0.6); }
+body.logged-in .card-buttons button{ padding:8px 10px; font-size:11px; border-radius:8px; background: rgba(0,0,0,0.5); color: var(--neon-blue); }
+body.logged-in .favorite.active { color: var(--neon-green); text-shadow:0 4px 12px rgba(124,255,0,0.08) }
 @media(max-width:880px){#custom-panel{width:86%}}
 </style>
 </head>
@@ -241,7 +261,7 @@ function buildCard(fname){
   star.className='favorite';
   star.title='Toggle favorite';
   star.style.marginLeft='6px';
-  star.onclick = (e)=>{ e.stopPropagation(); toggleFav(id); star.innerHTML = prefs.favs.includes(id)?'⭐':'☆'; };
+  star.onclick = (e)=>{ e.stopPropagation(); toggleFav(id); star.innerHTML = prefs.favs.includes(id)?'⭐':'☆'; star.classList.toggle('active', prefs.favs.includes(id)); };
   card.innerHTML = `<div style="font-size:12px">${title}</div>`;
   const btns = document.createElement('div'); btns.className='card-buttons';
 
@@ -281,6 +301,12 @@ function renderGames(filter=''){
   else if(filter && typeof filter === 'string' && filter.trim()!=='') list = list.filter(f=>f.toLowerCase().includes(filter.toLowerCase()));
   list.forEach(f=> gamesDiv.appendChild(buildCard(f)));
   applyGrid();
+  // mark favorite stars visually
+  document.querySelectorAll('.game-card').forEach(card=>{
+    const titleTxt = card.querySelector('div').textContent.trim().toLowerCase().replace(/\s+/g,'-') + '.html';
+    const star = card.querySelector('.favorite');
+    if(prefs.favs.includes(titleTxt)) star.classList.add('active'); else star.classList.remove('active');
+  });
 }
 
 /* ----------------- FAVORITES ----------------- */
@@ -385,58 +411,46 @@ toggleVerse.addEventListener('change', ()=>{ localStorage.setItem('pref-verse', 
 });
 
 /* ----------------- PROXY / DEPLOY V3 (persistent + restore) ----------------- */
-/* NOTE: PROXY_URL can be preset to a known worker; if left blank, user is prompted */
 const deployBtn = document.getElementById('deploy-proxy-btn');
 const proxyOverlay = document.getElementById('proxy-overlay');
 const proxyIframe = document.getElementById('proxy-iframe');
 const proxyBack = document.getElementById('proxy-back');
 
-// DEFAULT proxy URL you want to use automatically.
-// If you'd like to keep it prefilled, change PROXY_URL to your worker URL.
-// Example: const PROXY_URL = 'https://my-proxy.workers.dev/';
-const PROXY_URL = localStorage.getItem('proxy-default') || ''; // you can set by calling localStorage.setItem('proxy-default','https://...')
-
+// Use saved proxy-url or prompt on first use.
+// Saves last used URL in localStorage 'proxy-url'; saves active state in 'proxy-active' (so the overlay is restored across refresh)
 function showProxy(url){
   proxyIframe.src = url;
   proxyOverlay.style.display = 'flex';
   proxyOverlay.setAttribute('aria-hidden','false');
-  document.body.style.overflow = 'hidden'; // prevent background scroll
+  document.body.style.overflow = 'hidden';
 }
 
-// Deploy behavior: use default if present, otherwise prompt once.
 deployBtn.addEventListener('click', async (e)=> {
   e.stopPropagation();
-  let url = PROXY_URL || localStorage.getItem('proxy-url') || '';
+  let url = localStorage.getItem('proxy-url') || '';
   if(!url){
     url = prompt('Enter deploy proxy URL (example: https://your-worker.workers.dev/)');
     if(!url) return;
-    // save as last-used proxy
-    localStorage.setItem('proxy-url', url);
-  } else {
-    // if PROXY_URL was set in localStorage or constant, ensure saved
     localStorage.setItem('proxy-url', url);
   }
   localStorage.setItem('proxy-active','1');
   showProxy(url);
 });
 
-// Back button
 proxyBack.addEventListener('click', (e)=> {
   e.stopPropagation();
   proxyIframe.src = 'about:blank';
   proxyOverlay.style.display = 'none';
   proxyOverlay.setAttribute('aria-hidden','true');
-  document.body.style.overflow = ''; // restore scrolling
+  document.body.style.overflow = '';
   localStorage.removeItem('proxy-active');
-  // leave saved proxy-url intact so next time user doesn't need to re-enter
 });
 
-// Restore on load if user had proxy open or saved proxy exists
+// Restore on load if user had proxy active before refresh
 window.addEventListener('load', ()=>{
   const wasActive = localStorage.getItem('proxy-active') === '1';
   const saved = localStorage.getItem('proxy-url') || '';
   if(wasActive && saved){
-    // small delay to ensure DOM fully ready
     setTimeout(()=> showProxy(saved), 120);
   }
 });
@@ -448,23 +462,14 @@ document.addEventListener('keydown', (e)=> {
   }
 });
 
-/* ----------------- AUTH (signup/login) -----------------
-   Client-side only (demo): store username -> SHA-256(password).
-   This avoids storing plain passwords in localStorage.
------------------------------------------------------ */
-
-const loginScreen = document.getElementById('login-screen');
-const signupScreen = document.getElementById('signup-screen');
+/* ----------------- AUTH (signup/login) ----------------- */
 const showSignupBtn = document.getElementById('show-signup-btn');
 const showLoginBtn = document.getElementById('show-login-btn');
 const loginBtn = document.getElementById('login-btn');
 const createAccountBtn = document.getElementById('create-account-btn');
 
-function showSignup(){ loginScreen.style.display='none'; signupScreen.style.display='flex'; }
-function showLogin(){ signupScreen.style.display='none'; loginScreen.style.display='flex'; }
-
-showSignupBtn.addEventListener('click', showSignup);
-showLoginBtn.addEventListener('click', showLogin);
+showSignupBtn.addEventListener('click', ()=>{ document.getElementById('login-screen').style.display='none'; document.getElementById('signup-screen').style.display='flex'; });
+showLoginBtn.addEventListener('click', ()=>{ document.getElementById('signup-screen').style.display='none'; document.getElementById('login-screen').style.display='flex'; });
 
 async function sha256hex(str){
   const enc = new TextEncoder();
@@ -487,7 +492,8 @@ createAccountBtn.addEventListener('click', async ()=>{
   localStorage.setItem('accounts', JSON.stringify(accounts));
   document.getElementById('signup-error').style.display='none';
   alert('Account created. Please login.');
-  showLogin();
+  document.getElementById('signup-screen').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
 });
 
 loginBtn.addEventListener('click', async ()=>{
@@ -497,13 +503,51 @@ loginBtn.addEventListener('click', async ()=>{
   const hash = await sha256hex(p);
   if(!accounts[u] || accounts[u] !== hash){ document.getElementById('login-error').style.display='block'; return; }
   document.getElementById('login-error').style.display='none';
-  grantAccess();
+  // store last-login for UI personalization and call grantAccess
+  localStorage.setItem('last-login', u);
+  grantAccess(u);
 });
 
-function grantAccess(){
-  loginScreen.style.display='none';
-  signupScreen.style.display='none';
+/* ----------------- applyLoggedInUI() - the "screenshot" look ----------------- */
+function applyLoggedInUI(){
+  document.body.classList.add('logged-in');
+
+  // animate the deploy button slightly
+  const d = document.getElementById('deploy-proxy-btn');
+  if(d){
+    d.animate([
+      { transform: 'translateX(-50%) scale(0.98)', boxShadow: '0 6px 18px rgba(0,0,0,0.3)' },
+      { transform: 'translateX(-50%) scale(1.02)', boxShadow: '0 12px 36px rgba(0,230,255,0.12)' },
+      { transform: 'translateX(-50%) scale(1)', boxShadow: '0 8px 28px rgba(0,0,0,0.4)' }
+    ], { duration: 900, iterations: 1, easing: 'ease-out' });
+  }
+
+  // set banner welcome using last-login
+  const last = localStorage.getItem('last-login') || '';
+  if(last){
+    document.getElementById('custom-banner').textContent = `WELCOME BACK — ${last.toUpperCase()}`;
+  }
+
+  // mark favorites visually
+  document.querySelectorAll('.favorite').forEach(el=>{
+    // find nearest card's filename (we constructed filenames to map)
+    const card = el.closest('.game-card');
+    if(!card) return;
+    const title = card.querySelector('div')?.textContent?.trim();
+    if(!title) return;
+    const fname = title.toLowerCase().replace(/\s+/g,'-') + '.html';
+    el.classList.toggle('active', prefs.favs.includes(fname));
+  });
+}
+
+/* ----------------- grantAccess (show ACCESS GRANTED and apply UI) ----------------- */
+function grantAccess(username){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('signup-screen').style.display='none';
   document.getElementById('access-granted').style.display='flex';
+  // apply the logged-in UI immediately
+  applyLoggedInUI();
+  // hide the access message after a short moment
   setTimeout(()=>{ document.getElementById('access-granted').style.display='none'; }, 1200);
 }
 
@@ -516,6 +560,10 @@ function grantAccess(){
   bannerInput.value = prefs.banner; document.getElementById('custom-banner').textContent = prefs.banner;
   gridSize.value = prefs.grid; applyGrid();
   renderGames();
+
+  // If user already logged in previously, apply logged-in UI
+  const last = localStorage.getItem('last-login');
+  if(last) applyLoggedInUI();
 })();
 
 /* ----------------- Shortcuts ----------------- */
