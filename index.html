@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>JACOB'S ARCADE V3 — Full</title>
+<title>JACOB'S ARCADE V4 — Neon Slide</title>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
   :root{
@@ -14,6 +14,7 @@
     --muted:rgba(255,255,255,0.14);
     --glass: rgba(255,255,255,0.02);
     --accent: linear-gradient(90deg,var(--neon),var(--neon-2));
+    --glass-border: rgba(255,255,255,0.03);
   }
   *{box-sizing:border-box}
   html,body{height:100%;margin:0;font-family:"Press Start 2P",Arial,Helvetica,sans-serif;background:var(--bg);color:#e9fbff;overflow-x:hidden}
@@ -22,24 +23,24 @@
   .logo{width:52px;height:52px;border-radius:10px;background:var(--accent);color:#001;display:flex;align-items:center;justify-content:center;font-weight:700}
   h1{font-size:14px;margin:0;color:var(--neon)}
   .top-controls{display:flex;align-items:center;gap:8px}
-  .btn{background:transparent;border:1px solid rgba(255,255,255,0.05);padding:8px 10px;border-radius:8px;color:var(--neon);cursor:pointer;font-size:11px}
+  .btn{background:transparent;border:1px solid var(--glass-border);padding:8px 10px;border-radius:8px;color:var(--neon);cursor:pointer;font-size:11px}
   .btn.ghost{color:var(--neon-2)}
-  #deploy-proxy-btn{position:relative;left:0;transform:none;padding:8px 14px;border-radius:12px;background:var(--accent);color:#001;border:none;cursor:pointer;box-shadow:0 8px 28px rgba(0,200,255,0.06)}
+  #deploy-proxy-btn{position:relative;left:0;transform:none;padding:8px 14px;border-radius:12px;background:var(--accent);color:#001;border:none;cursor:pointer;box-shadow:0 6px 28px rgba(0,200,255,0.06)}
   /* layout */
   .container{display:grid;grid-template-columns:220px 1fr;gap:18px;padding:18px}
   @media(max-width:980px){.container{grid-template-columns:1fr;padding:12px}}
   /* sidebar */
-  .sidebar{background:var(--panel);border-radius:12px;padding:12px;border:1px solid rgba(255,255,255,0.02);height:calc(100vh - 110px);overflow:auto}
+  .sidebar{background:var(--panel);border-radius:12px;padding:12px;border:1px solid var(--glass-border);height:calc(100vh - 110px);overflow:auto}
   .profile{display:flex;gap:10px;align-items:center;margin-bottom:12px}
   .avatar{width:54px;height:54;border-radius:8px;background:var(--glass);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px}
   .profile h3{margin:0;font-size:12px;color:var(--neon)}
   .category-list{display:flex;flex-direction:column;gap:8px;margin-top:12px}
-  .category{padding:8px;border-radius:8px;cursor:pointer;border:1px solid rgba(255,255,255,0.02);font-size:12px;color:var(--muted)}
+  .category{padding:8px;border-radius:8px;cursor:pointer;border:1px solid var(--glass-border);font-size:12px;color:var(--muted)}
   .category.active{background:rgba(0,230,255,0.06);color:var(--neon)}
   /* main */
   .main{overflow:auto;padding-bottom:80px}
   .controls{display:flex;gap:12px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
-  #search-games{flex:1;min-width:240px;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:var(--glass);color:var(--neon);font-size:12px}
+  #search-games{flex:1;min-width:240px;padding:10px;border-radius:10px;border:1px solid var(--glass-border);background:var(--glass);color:var(--neon);font-size:12px}
   .small{font-size:11px;padding:6px 8px}
   .banner{padding:10px;border-radius:10px;background:linear-gradient(90deg,rgba(0,0,0,0.4),rgba(255,255,255,0.02));text-align:center;margin-bottom:12px;color:var(--neon-2);font-size:11px}
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
@@ -50,18 +51,25 @@
   .card-ctrls{display:flex;gap:8px;flex-wrap:wrap}
   .tiny{font-size:10px;padding:6px 7px;border-radius:8px}
   .fav{position:absolute;right:8px;top:8px;font-size:14px;cursor:pointer}
-  .tag{display:inline-block;padding:4px 8px;border-radius:8px;font-size:10px;color:var(--muted);border:1px solid rgba(255,255,255,0.02);margin-right:6px}
+  .tag{display:inline-block;padding:4px 8px;border-radius:8px;font-size:10px;color:var(--muted);border:1px solid var(--glass-border);margin-right:6px}
   /* overlays */
   #loading-overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.78);z-index:4000}
-  #proxy-overlay{position:fixed;inset:0;display:none;flex-direction:column;z-index:5000}
-  #proxy-iframe{flex:1;border:0}
-  #proxy-topbar{height:44px;background:rgba(0,0,0,0.6);display:flex;align-items:center;gap:10px;padding:8px;border-bottom:1px solid rgba(255,255,255,0.03)}
-  #cloak-overlay{position:fixed;inset:0;display:none;z-index:7000;background:#f6f6f6;color:#111;align-items:flex-start}
-  .doc-header{height:60px;background:#fff;border-bottom:1px solid #eee;display:flex;align-items:center;gap:12px;padding:12px}
-  .doc-input{width:320px;padding:8px;border-radius:6px;border:1px solid #ddd}
-  .help{font-size:11px;color:#444;margin-left:12px}
+  .loader-box{width:420px;max-width:92%;background:rgba(255,255,255,0.02);padding:18px;border-radius:10px;border:1px solid var(--glass-border);text-align:center}
+  .loader-text{font-size:12px;color:var(--neon)}
+  .loader-sub{font-size:11px;color:var(--muted);margin-top:8px}
+  .progress-outer{height:10px;background:rgba(255,255,255,0.03);border-radius:999px;margin-top:12px;overflow:hidden}
+  .progress-inner{height:100%;width:0;background:linear-gradient(90deg,var(--neon),var(--neon-2));box-shadow:0 6px 18px rgba(0,200,255,0.06);transition:width .24s linear}
+  /* proxy full takeover */
+  #proxy-takeover{position:fixed;inset:0;display:none;flex-direction:column;z-index:5000;background:#000}
+  #proxy-back-floating{position:fixed;left:12px;top:12px;z-index:6000;border-radius:8px;padding:8px 10px;background:rgba(0,0,0,0.6);border:1px solid var(--glass-border);cursor:pointer;color:var(--neon-2);font-size:12px}
+  #proxy-frame{flex:1;border:0;width:100%;height:100%}
+  /* transitions */
+  .fade-in { animation: fadeIn .22s ease forwards }
+  @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+  /* loader slide-in text (Loading A) */
+  .slide-text { transform: translateY(18px); opacity:0; transition: transform .36s ease, opacity .36s ease }
+  .slide-text.show { transform: translateY(0); opacity:1 }
   footer{padding:12px;text-align:center;color:var(--muted);font-size:11px}
-  /* animations */
   @keyframes neonPulse {0%{box-shadow:0 0 6px rgba(0,230,255,0.08)}50%{box-shadow:0 0 20px rgba(0,230,255,0.12)}100%{box-shadow:0 0 6px rgba(0,230,255,0.08)}}
   .logo{animation:neonPulse 3s infinite}
 </style>
@@ -72,7 +80,7 @@
   <div class="left-row">
     <div class="logo">J²</div>
     <div>
-      <h1>JACOB'S ARCADE V3</h1>
+      <h1>JACOB'S ARCADE V4</h1>
       <div style="font-size:10px;color:var(--muted)">NEON BLUE HOME</div>
     </div>
   </div>
@@ -109,7 +117,7 @@
 
     <div style="margin-top:14px;font-size:11px;color:var(--muted)">
       <div style="margin-bottom:8px">PROXY SETTINGS</div>
-      <input id="proxy-url-input" placeholder="Proxy URL (worker)" style="width:100%;padding:8px;border-radius:8px;background:var(--glass);border:1px solid rgba(255,255,255,0.03);color:var(--neon);font-size:12px">
+      <input id="proxy-url-input" placeholder="Proxy URL (worker)" style="width:100%;padding:8px;border-radius:8px;background:var(--glass);border:1px solid var(--glass-border);color:var(--neon);font-size:12px">
       <div style="display:flex;gap:8px;margin-top:8px">
         <button id="save-proxy" class="btn small">Save</button>
         <button id="clear-proxy" class="btn small">Clear</button>
@@ -137,22 +145,23 @@
   </main>
 </div>
 
-<!-- LOADING -->
-<div id="loading-overlay"><div style="background:rgba(255,255,255,0.02);padding:18px;border-radius:8px;border:1px solid rgba(255,255,255,0.04)"><div id="loading-msg">Loading...</div></div></div>
-
-<!-- PROXY OVERLAY -->
-<div id="proxy-overlay" style="display:none;flex-direction:column">
-  <div id="proxy-topbar">
-    <button id="proxy-back" class="btn small">← BACK</button>
-    <div style="flex:1"></div>
-    <div style="font-size:12px;color:var(--muted)">Proxy view</div>
-    <div style="width:12px"></div>
+<!-- LOADING overlay (Neon Slide A / Progress Smooth 1 / Fade transition) -->
+<div id="loading-overlay">
+  <div class="loader-box">
+    <div class="loader-text slide-text" id="loading-main">LOADING...</div>
+    <div class="loader-sub" id="loading-sub">Preparing neon hamster...</div>
+    <div class="progress-outer"><div class="progress-inner" id="loader-bar"></div></div>
   </div>
-  <iframe id="proxy-iframe" sandbox="allow-same-origin allow-scripts allow-forms allow-popups"></iframe>
+</div>
+
+<!-- PROXY takeover (same-tab full embedded) -->
+<div id="proxy-takeover" aria-hidden="true">
+  <button id="proxy-back-floating" title="Back to Arcade">← BACK</button>
+  <iframe id="proxy-frame" src="" sandbox="allow-same-origin allow-scripts allow-forms allow-popups"></iframe>
 </div>
 
 <!-- CLOAK (Google Docs style fake overlay) -->
-<div id="cloak-overlay" style="display:none;flex-direction:column">
+<div id="cloak-overlay" style="display:none;flex-direction:column;position:fixed;inset:0;z-index:5500;background:#f6f6f6;color:#111">
   <div class="doc-header">
     <div style="font-weight:700;color:#1a73e8">Docs — Jacob's Arcade</div>
     <input class="doc-input" value="Untitled document" />
@@ -167,8 +176,8 @@
 <div id="login-screen" style="position:fixed;inset:0;display:none;background:rgba(0,0,0,0.92);z-index:8000;align-items:center;justify-content:center">
   <div style="background:#0b0b0d;padding:18px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);width:340px;text-align:center">
     <h3 style="margin:6px 0;color:var(--neon)">Login</h3>
-    <input id="login-username" placeholder="username" style="width:100%;padding:8px;margin-top:8px;border-radius:8px;background:var(--glass);border:1px solid rgba(255,255,255,0.03);color:var(--neon)">
-    <input id="login-password" placeholder="password" type="password" style="width:100%;padding:8px;margin-top:8px;border-radius:8px;background:var(--glass);border:1px solid rgba(255,255,255,0.03);color:var(--neon)">
+    <input id="login-username" placeholder="username" style="width:100%;padding:8px;margin-top:8px;border-radius:8px;background:var(--glass);border:1px solid var(--glass-border);color:var(--neon)">
+    <input id="login-password" placeholder="password" type="password" style="width:100%;padding:8px;margin-top:8px;border-radius:8px;background:var(--glass);border:1px solid var(--glass-border);color:var(--neon)">
     <div style="display:flex;gap:8px;margin-top:10px;justify-content:center">
       <button id="login-btn" class="btn small">LOGIN</button>
       <button id="show-signup" class="btn small">SIGNUP</button>
@@ -180,8 +189,8 @@
 <div id="signup-screen" style="position:fixed;inset:0;display:none;background:rgba(0,0,0,0.92);z-index:8000;align-items:center;justify-content:center">
   <div style="background:#0b0b0d;padding:18px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);width:340px;text-align:center">
     <h3 style="margin:6px 0;color:var(--neon)">Sign Up</h3>
-    <input id="signup-username" placeholder="username" style="width:100%;padding:8px;margin-top:8px;border-radius:8px;background:var(--glass);border:1px solid rgba(255,255,255,0.03);color:var(--neon)">
-    <input id="signup-password" placeholder="password" type="password" style="width:100%;padding:8px;margin-top:8px;border-radius:8px;background:var(--glass);border:1px solid rgba(255,255,255,0.03);color:var(--neon)">
+    <input id="signup-username" placeholder="username" style="width:100%;padding:8px;margin-top:8px;border-radius:8px;background:var(--glass);border:1px solid var(--glass-border);color:var(--neon)">
+    <input id="signup-password" placeholder="password" type="password" style="width:100%;padding:8px;margin-top:8px;border-radius:8px;background:var(--glass);border:1px solid var(--glass-border);color:var(--neon)">
     <div style="display:flex;gap:8px;margin-top:10px;justify-content:center">
       <button id="create-account" class="btn small">CREATE</button>
       <button id="back-login" class="btn small">BACK</button>
@@ -193,7 +202,7 @@
 <footer>FOLLOW — YOUTUBE / TWITCH / TIKTOK</footer>
 
 <script>
-/* ----------------- GAME LIST (from user filenames) ----------------- */
+/* ----------------- GAME LIST (as provided) ----------------- */
 const GAME_FILES = [
 "1v1lol.html","amanda.html","aquapark.html","bad-parenting-1.html","baldis-basics.html",
 "baseball-bros.html","basket-bros.html","bitlife.html","block-blast.html","bowmasters.html",
@@ -206,86 +215,136 @@ const GAME_FILES = [
 "subway-surfers-barcelona.html","super-mario-bros.html","supreme-duelists.html"
 ];
 
-/* ----------------- HELPERS ----------------- */
-function qsel(s){return document.querySelector(s)}
-function qall(s){return Array.from(document.querySelectorAll(s))}
-function wait(ms){return new Promise(r=>setTimeout(r,ms))}
-function pad(n){return n.toString().padStart(2,'0')}
+/* ----------------- goofy loading messages (kept extensive) ----------------- */
+const LOADING_MESSAGES = [
+"Loading... bruh the hamster fell off the wheel",
+"Game is booting up... it’s lagging like your WiFi",
+"Hold on, the pixels are arguing again",
+"Loading... your PC is crying but it’ll be okay",
+"Bringing snacks for the CPU",
+"Summoning the joystick spirits",
+"Polishing the high scores",
+"Tightening sprites' shoelaces",
+"Applying duct tape to the physics engine",
+"Feeding the binary hamsters",
+"Charging the fun capacitor",
+"Warming up the magenta pixels",
+"Checking for missing semicolons",
+"Negotiating with the browser for extra RAM",
+"Borrowing energy from Pluto",
+"Asking the clouds for frames per second",
+"Whispering to the WASM gods",
+"Convincing the fonts to cooperate",
+"Debugging with a rubber chicken",
+"Loading... the snail courier is almost there",
+"Tuning the retro synths",
+"Infusing code with extra vibes",
+"Making sure the hero has a cool hat",
+"Applying anti-glitch stickers",
+"Rebooting the imagination module",
+"Searching for lost pixels",
+"Shouting encouragement at the CPU",
+"Packing parachutes for sprites",
+"Latent meme retrieval in progress",
+"Adjusting gravity to moderate",
+"Upgrading the fun meter to max",
+"One moment while we summon the fun!"
+];
 
-/* ----------------- THUMBNAIL GENERATOR (SVG data URL) ----------------- */
-function makeThumb(title){
-  const bg = '#071019';
-  const c = encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='600' height='360'>
-    <defs><linearGradient id='g' x1='0' x2='1'><stop offset='0' stop-color='#00e6ff'/><stop offset='1' stop-color='#7cff00'/></linearGradient></defs>
-    <rect width='100%' height='100%' fill='${bg}' rx='8'/>
-    <text x='50%' y='46%' fill='white' font-family='Press Start 2P, Arial' font-size='24' dominant-baseline='middle' text-anchor='middle' fill-opacity='0.95'>${escapeHtml(shorten(title,26))}</text>
-    <rect x='0' y='270' width='100%' height='90' fill='url(#g)' fill-opacity='0.08'/>
-  </svg>`);
-  return `data:image/svg+xml;charset=utf-8,${c}`;
-}
-function escapeHtml(s){return s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;')}
+/* ----------------- helpers ----------------- */
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const wait = ms => new Promise(r=>setTimeout(r,ms));
+const pad = n => n.toString().padStart(2,'0');
+function randFrom(arr){ return arr[Math.floor(Math.random()*arr.length)] }
+
+/* ----------------- thumbnails: SVG data urls (type=A) ----------------- */
+function escapeHtml(s){ return s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;') }
 function shorten(s,n){ if(s.length<=n) return s; return s.slice(0,n-1)+'…' }
 function fileToTitle(fn){ return fn.replace(/\.html?$/i,'').replace(/[-_.]/g,' ').toUpperCase() }
+function makeThumb(title){
+  const bg = '#071019';
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='800' height='480'>
+    <defs><linearGradient id='g' x1='0' x2='1'><stop offset='0' stop-color='#00e6ff'/><stop offset='1' stop-color='#7cff00'/></linearGradient></defs>
+    <rect width='100%' height='100%' fill='${bg}' rx='16'/>
+    <g font-family='Press Start 2P, Arial' font-size='34' fill='#ffffff'>
+      <text x='50%' y='40%' text-anchor='middle' dominant-baseline='middle' fill-opacity='0.95'>${escapeHtml(shorten(title,28))}</text>
+    </g>
+    <rect x='0' y='360' width='100%' height='120' fill='url(#g)' fill-opacity='0.06'/>
+  </svg>`;
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
 
-/* ----------------- CATEGORIES heuristic ----------------- */
+/* ----------------- categorize (simple heuristics) ----------------- */
 const CATS = { 'Platform':[], 'Arcade':[], 'Sports':[], 'Sim':[], 'Rhythm':[], 'Action':[], 'Other':[] };
 function assignCategory(fn){
-  const lower = fn.toLowerCase();
-  if(/sonic|mario|cuphead|minecraft|super|sonic-man/i.test(lower)) return 'Platform';
-  if(/run|slope|slither|justfall|flip|stickman|stickman-hook|block-blast|1v1lol|steal|schoolboy/i.test(lower)) return 'Arcade';
-  if(/football|baseball|retro-bowl|basket|subway-surfers/i.test(lower)) return 'Sports';
-  if(/bitlife|buildnow|minecraft|buildnow.gg/i.test(lower)) return 'Sim';
-  if(/friday|fnaf|fears|rhythm|funkin/i.test(lower)) return 'Rhythm';
-  if(/clash|bowmasters|supreme|sonic.exe|bad-parenting|steal|fight|hook/i.test(lower)) return 'Action';
+  const l = fn.toLowerCase();
+  if(/sonic|mario|cuphead|minecraft|super|sonic-man/i.test(l)) return 'Platform';
+  if(/run|slope|slither|justfall|flip|stickman|block-blast|1v1lol|steal|schoolboy/i.test(l)) return 'Arcade';
+  if(/football|baseball|retro-bowl|basket|subway-surfers/i.test(l)) return 'Sports';
+  if(/bitlife|buildnow|minecraft|buildnow.gg/i.test(l)) return 'Sim';
+  if(/friday|fnaf|fears|rhythm|funkin/i.test(l)) return 'Rhythm';
+  if(/clash|bowmasters|supreme|sonic.exe|bad-parenting|steal|fight|hook/i.test(l)) return 'Action';
   return 'Other';
 }
 
-/* ----------------- PERSISTENCE ----------------- */
+/* ----------------- persistence / prefs ----------------- */
 const prefs = {
   favs: JSON.parse(localStorage.getItem('pref-favs')||'[]'),
-  neon: localStorage.getItem('pref-neon')||'#00e6ff',
   proxyUrl: localStorage.getItem('proxy-url')||'https://tkmafsenoo.coaching2lead.com',
   proxyActive: localStorage.getItem('proxy-active')==='1'
-}
+};
 
-/* ----------------- RENDER / INIT ----------------- */
-const grid = qsel('#games-grid');
-const catListEl = qsel('#category-list');
-const categoryFilter = qsel('#category-filter');
-
+/* ----------------- build catalog & render ----------------- */
+let CATALOG = [];
+const gridEl = $('#games-grid');
+const catListEl = $('#category-list');
+const categoryFilter = $('#category-filter');
 function buildCatalog(){
-  // classify files into objects
   const items = GAME_FILES.map(fn=>{
     const title = fileToTitle(fn);
-    const cat = assignCategory(fn) || 'Other';
-    return {file:fn,title,cat,thumb:makeThumb(title)}
+    const cat = assignCategory(fn);
+    return { file: fn, title, cat, thumb: makeThumb(title) };
   });
-  // group cats
   Object.keys(CATS).forEach(k=>CATS[k]=[]);
-  items.forEach(it=>CATS[it.cat] ? CATS[it.cat].push(it) : (CATS.Other.push(it)));
+  items.forEach(it=> (CATS[it.cat]||CATS.Other).push(it));
+  CATALOG = items;
   return items;
 }
-let CATALOG = buildCatalog();
 
 function renderCategories(){
-  catListEl.innerHTML=''; categoryFilter.innerHTML='<option value="">All Categories</option>';
+  catListEl.innerHTML=''; categoryFilter.innerHTML = '<option value="">All Categories</option>';
   Object.keys(CATS).forEach(cat=>{
-    const btn = document.createElement('div');
-    btn.className='category';
-    btn.textContent = `${cat} (${CATS[cat].length})`;
-    btn.onclick = ()=> { qall('.category').forEach(x=>x.classList.remove('active')); btn.classList.add('active'); renderGames(cat); }
+    const btn = document.createElement('div'); btn.className='category'; btn.textContent = `${cat} (${CATS[cat].length})`;
+    btn.onclick = ()=> { $$('.category').forEach(x=>x.classList.remove('active')); btn.classList.add('active'); renderGames(cat); }
     catListEl.appendChild(btn);
     const opt = document.createElement('option'); opt.value = cat; opt.textContent = cat; categoryFilter.appendChild(opt);
   });
 }
 
-function renderGames(filter='',search=''){
-  grid.innerHTML='';
+function renderFavList(){
+  const out = $('#fav-list'); out.innerHTML='';
+  prefs.favs.forEach(fn=>{
+    const title = fileToTitle(fn);
+    const el = document.createElement('div'); el.style.display='flex'; el.style.justifyContent='space-between'; el.style.alignItems='center';
+    el.style.padding='6px'; el.style.borderRadius='6px'; el.style.fontSize='12px'; el.style.border='1px solid rgba(255,255,255,0.02)';
+    el.innerHTML = `<div>${title}</div><div style="display:flex;gap:6px"><button class="btn small" onclick="playGame('${fn}')">PLAY</button><button class="btn small" onclick="toggleFav('${fn}');renderFavList();renderGames();">REMOVE</button></div>`;
+    out.appendChild(el);
+  });
+}
+
+function toggleFav(fn){
+  if(!prefs.favs.includes(fn)) prefs.favs.push(fn); else prefs.favs = prefs.favs.filter(x=>x!==fn);
+  localStorage.setItem('pref-favs', JSON.stringify(prefs.favs));
+}
+
+/* ----------------- render grid ----------------- */
+function renderGames(filter='', search=''){
+  gridEl.innerHTML='';
   let list = CATALOG.slice();
   if(filter && filter!=='') list = list.filter(it=>it.cat===filter);
   if(search && search.trim()!=='') list = list.filter(it=>it.title.toLowerCase().includes(search.toLowerCase()));
-  // if show favorites mode
-  if(filter==='__FAVS__') list = list.filter(it=> prefs.favs.includes(it.file));
+  if(filter === '__FAVS__') list = list.filter(it=> prefs.favs.includes(it.file));
   list.forEach(it=>{
     const card = document.createElement('div'); card.className='card';
     const fav = document.createElement('div'); fav.className='fav'; fav.title='Toggle favorite';
@@ -298,194 +357,233 @@ function renderGames(filter='',search=''){
     const play = document.createElement('button'); play.className='tiny btn'; play.textContent='PLAY';
     play.onclick = ()=> playGame(it.file);
     const pop = document.createElement('button'); pop.className='tiny btn'; pop.textContent='POP-OUT';
-    pop.onclick = (e)=> { e.stopPropagation(); openAboutBlank(it.file, it.title); };
+    pop.onclick = (e)=> { e.stopPropagation(); openAboutBlankWithLoader(it.file, it.title); };
     const cloakBtn = document.createElement('button'); cloakBtn.className='tiny btn ghost'; cloakBtn.textContent='CLOAK';
     cloakBtn.onclick = ()=> quickCloak();
     ctrls.append(play, pop, cloakBtn);
     card.appendChild(fav); card.appendChild(img); card.appendChild(title); card.appendChild(tags); card.appendChild(ctrls);
-    grid.appendChild(card);
+    gridEl.appendChild(card);
   });
   if(list.length===0){
-    grid.innerHTML = `<div style="color:var(--muted);padding:30px;font-size:12px">No games found</div>`;
+    gridEl.innerHTML = `<div style="color:var(--muted);padding:30px;font-size:12px">No games found</div>`;
   }
 }
 
-function renderFavList(){
-  const out = qsel('#fav-list'); out.innerHTML='';
-  prefs.favs.forEach(fn=>{
-    const title = fileToTitle(fn);
-    const el = document.createElement('div'); el.style.display='flex'; el.style.justifyContent='space-between'; el.style.alignItems='center';
-    el.style.padding='6px'; el.style.borderRadius='6px'; el.style.fontSize='12px'; el.style.border='1px solid rgba(255,255,255,0.02)';
-    el.innerHTML = `<div>${title}</div><div style="display:flex;gap:6px"><button class="btn small" onclick="playGame('${fn}')">PLAY</button><button class="btn small" onclick="toggleFav('${fn}');renderFavList();renderGames();">REMOVE</button></div>`;
-    out.appendChild(el);
-  });
-}
+/* ----------------- loader UI (Neon slide + smooth progress) ----------------- */
+const loadingOverlay = $('#loading-overlay');
+const loadingMain = $('#loading-main');
+const loadingSub = $('#loading-sub');
+const loaderBar = $('#loader-bar');
 
-/* ----------------- FAVORITES ----------------- */
-function toggleFav(fn){
-  if(!prefs.favs.includes(fn)) prefs.favs.push(fn);
-  else prefs.favs = prefs.favs.filter(x=>x!==fn);
-  localStorage.setItem('pref-favs', JSON.stringify(prefs.favs));
-  renderGames(categoryFilter.value || '');
-}
-
-/* ----------------- PLAY / LOADING / ABOUT:BLANK ----------------- */
-const loadingOverlay = qsel('#loading-overlay');
-async function playGame(url){
-  // show loading then navigate in same tab
-  qsel('#loading-msg').textContent = 'Starting game...';
+async function showLoaderPhase(duration=1200){
+  // slide-in text (Loading A)
+  loadingMain.classList.add('slide-text');
+  loadingMain.classList.add('show');
   loadingOverlay.style.display='flex';
-  await wait(700 + Math.random()*800);
+  loaderBar.style.width='4%';
+  let elapsed = 0;
+  const start = Date.now();
+  while(Date.now() - start < duration){
+    elapsed = Date.now() - start;
+    // smooth progress easing
+    const t = Math.min(1, elapsed / duration);
+    const eased = Math.floor(4 + (Math.pow(t,0.7))*96); // 4% -> 100%
+    loaderBar.style.width = eased + '%';
+    await wait(80);
+  }
+  loaderBar.style.width='100%';
+  await wait(160);
+  // fade-out (transition a)
+  loadingOverlay.style.opacity = '0';
+  await wait(180);
   loadingOverlay.style.display='none';
+  loadingOverlay.style.opacity = '';
+  loaderBar.style.width = '0%';
+  loadingMain.classList.remove('show');
+}
+
+/* show a random goofy message set */
+function setRandomLoadingMessage(){
+  loadingMain.textContent = randFrom(LOADING_MESSAGES);
+  loadingSub.textContent = 'Preparing neon goodness...';
+}
+
+/* ----------------- play / about:blank pop-out with loader (ensures loader appears before content) ----------------- */
+async function playGame(url){
+  // show loader on the main page then navigate in same tab
+  setRandomLoadingMessage();
+  await showLoaderPhase(1200 + Math.random()*900);
+  // fade effect into navigation
+  document.body.classList.add('fade-in');
+  // navigate in same tab (user wanted same-tab)
   window.location.href = url;
 }
 
-async function openAboutBlank(url,title){
+/* Pop-out: open about:blank then show same loader inside the new window before injecting content */
+async function openAboutBlankWithLoader(url, title){
   try{
     const w = window.open('about:blank');
-    if(!w) return alert('Popup blocked. Allow popups for this site.');
-    // fetch file text and pop into blob so relative assets remain local-friendly
+    if(!w){ alert('Popup blocked — allow popups for this site.'); return; }
+    // write immediate loader HTML into new window
+    const loaderHtml = `
+      <!doctype html><html><head><meta charset="utf-8"><title>Loading ${title}</title>
+      <style>
+        body{margin:0;background:#000;color:#e9fbff;font-family:Arial,Helvetica,sans-serif;display:flex;align-items:center;justify-content:center;height:100vh}
+        .box{width:420px;max-width:92%;background:rgba(255,255,255,0.02);padding:18px;border-radius:10px;text-align:center}
+        .main{font-weight:700;color:#00e6ff;margin-bottom:6px}
+        .sub{color:rgba(255,255,255,0.6);margin-bottom:12px}
+        .bar{height:10px;background:rgba(255,255,255,0.03);border-radius:999px;overflow:hidden}
+        .inner{height:100%;width:0;background:linear-gradient(90deg,#00e6ff,#7cff00);transition:width .2s linear;box-shadow:0 6px 18px rgba(0,200,255,0.06)}
+      </style>
+      </head><body><div class="box"><div class="main" id="m">LOADING...</div><div class="sub" id="s">Warming up neon hamsters</div><div class="bar"><div class="inner" id="i"></div></div></div>
+      <script>
+        const msgs = ${JSON.stringify(LOADING_MESSAGES)};
+        function rand(a){return a[Math.floor(Math.random()*a.length)];}
+        document.getElementById('m').textContent = rand(msgs);
+        let t=0;
+        const dur = 1200 + Math.random()*900;
+        const start = Date.now();
+        const iv = setInterval(()=> {
+          const p = Math.min(1, (Date.now()-start)/dur);
+          document.getElementById('i').style.width = (4 + Math.pow(p,0.7)*96) + '%';
+          if(p>=1){ clearInterval(iv); setTimeout(()=>{ document.body.style.opacity='0'; setTimeout(()=>{ document.body.innerHTML = '<iframe src=\"about:blank\" id=\"g\" style=\"width:100vw;height:100vh;border:0\"></iframe>'; },160); },200)}},60);
+      </script>
+      </body></html>`;
+    w.document.open();
+    w.document.write(loaderHtml);
+    w.document.close();
+
+    // fetch the game file; when fetched replace iframe src with blob
     const res = await fetch(url).catch(()=>null);
-    let content = '';
-    if(res && res.ok){ content = await res.text(); const blob = new Blob([content],{type:'text/html'}); const burl = URL.createObjectURL(blob); w.document.write(`<iframe src="${burl}" style="width:100vw;height:100vh;border:none"></iframe>`); w.document.close(); }
-    else { w.document.write(`<div style="background:#000;color:#fff;height:100vh;display:flex;align-items:center;justify-content:center;font-family:Arial">Could not load ${title}</div>`); w.document.close(); }
-  }catch(err){ console.error(err); alert('Failed to open pop-out'); }
+    if(res && res.ok){
+      const txt = await res.text();
+      const blob = new Blob([txt], {type: 'text/html'});
+      const blobUrl = URL.createObjectURL(blob);
+      // wait a small moment to let the loader finish visually
+      await wait(1600 + Math.random()*600);
+      // write final iframe page to include the blob
+      w.location.href = blobUrl;
+    } else {
+      // show error after small wait
+      await wait(900);
+      w.document.body.innerHTML = '<div style="background:#000;color:#fff;height:100vh;display:flex;align-items:center;justify-content:center;font-family:Arial">File not found: ' + encodeURIComponent(url) + '</div>';
+    }
+  } catch(err){
+    console.error(err); alert('Failed to pop-out (console).');
+  }
 }
 
-/* ----------------- PROXY (deploy) ----------------- */
-const proxyOverlay = qsel('#proxy-overlay');
-const proxyIframe = qsel('#proxy-iframe');
-const proxyBtn = qsel('#deploy-proxy-btn');
-const proxyUrlInput = qsel('#proxy-url-input');
-const saveProxyBtn = qsel('#save-proxy');
-const clearProxyBtn = qsel('#clear-proxy');
-const proxyBack = qsel('#proxy-back');
+/* ----------------- PROXY (same-tab full embedded) with persistence and floating back button ----------------- */
+const proxyBtn = $('#deploy-proxy-btn');
+const proxyTake = $('#proxy-takeover');
+const proxyFrame = $('#proxy-frame');
+const proxyBackFloating = $('#proxy-back-floating');
+const proxyUrlInput = $('#proxy-url-input');
+const saveProxyBtn = $('#save-proxy');
+const clearProxyBtn = $('#clear-proxy');
 
 proxyUrlInput.value = prefs.proxyUrl || '';
 
-function showProxy(url){
-  proxyIframe.src = url;
-  proxyOverlay.style.display='flex';
-  document.body.style.overflow='hidden';
+function openProxyFull(url){
+  // set frame src and show takeover (same tab)
+  proxyFrame.src = url;
+  proxyTake.style.display = 'flex';
+  proxyTake.classList.add('fade-in');
+  document.body.style.overflow = 'hidden';
   localStorage.setItem('proxy-active','1');
+  localStorage.setItem('proxy-url', url);
   prefs.proxyActive = true;
+  prefs.proxyUrl = url;
 }
 
 proxyBtn.addEventListener('click', ()=>{
-  let url = proxyUrlInput.value.trim() || prefs.proxyUrl || '';
+  let url = (proxyUrlInput.value && proxyUrlInput.value.trim()) || prefs.proxyUrl || '';
   if(!url){
     url = prompt('Enter proxy/worker URL (https://...)') || '';
     if(!url) return;
     proxyUrlInput.value = url;
   }
-  localStorage.setItem('proxy-url', url);
-  prefs.proxyUrl = url;
-  showProxy(url);
+  // Ensure https prefix if user pasted without scheme
+  if(!/^https?:\/\//i.test(url)) url = 'https://' + url;
+  proxyUrlInput.value = url;
+  openProxyFull(url);
 });
 
-proxyBack.addEventListener('click', ()=>{
-  proxyIframe.src = 'about:blank';
-  proxyOverlay.style.display='none';
-  document.body.style.overflow='';
+proxyBackFloating.addEventListener('click', ()=>{
+  proxyFrame.src = 'about:blank';
+  proxyTake.style.display = 'none';
+  document.body.style.overflow = '';
   localStorage.removeItem('proxy-active');
   prefs.proxyActive = false;
 });
 
 saveProxyBtn.addEventListener('click', ()=>{
-  localStorage.setItem('proxy-url', proxyUrlInput.value.trim());
-  prefs.proxyUrl = proxyUrlInput.value.trim();
+  const v = proxyUrlInput.value.trim();
+  if(!v) return alert('Enter a URL first');
+  localStorage.setItem('proxy-url', v);
+  prefs.proxyUrl = v;
   alert('Proxy URL saved');
 });
 clearProxyBtn.addEventListener('click', ()=>{
-  proxyUrlInput.value='';
+  proxyUrlInput.value = '';
   localStorage.removeItem('proxy-url');
-  prefs.proxyUrl='';
+  prefs.proxyUrl = '';
   alert('Proxy cleared');
 });
 
-/* restore proxy on load if active */
+/* restore proxy on load if was active */
 window.addEventListener('load', ()=>{
   if(prefs.proxyActive && prefs.proxyUrl){
-    setTimeout(()=> showProxy(prefs.proxyUrl), 120);
+    // slight delay to let DOM settle
+    setTimeout(()=> openProxyFull(prefs.proxyUrl), 140);
   }
 });
 
-/* ----------------- CLOCK ----------------- */
-function updateClock(){ const now = new Date(); qsel('#clock').textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}` }
+/* ----------------- clock ----------------- */
+function updateClock(){ const now = new Date(); $('#clock').textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}` }
 setInterval(updateClock,1000); updateClock();
 
-/* ----------------- CLOAK overlay ----------------- */
-const cloakOverlay = qsel('#cloak-overlay');
-const cloakBtn = qsel('#cloak-btn');
-const cloakClose = qsel('#cloak-close');
-const cloakQuick = qsel('#cloak-quick');
+/* ----------------- cloak overlay ----------------- */
+const cloakOverlay = $('#cloak-overlay');
+$('#cloak-btn').addEventListener('click', ()=> cloakOverlay.style.display = 'flex');
+$('#cloak-close').addEventListener('click', ()=> cloakOverlay.style.display = 'none');
+$('#cloak-quick').addEventListener('click', ()=> { cloakOverlay.style.display='flex'; setTimeout(()=> cloakOverlay.style.display='none', 600); });
 
-function openCloak(){
-  cloakOverlay.style.display='flex';
-}
-function closeCloak(){
-  cloakOverlay.style.display='none';
-}
-cloakBtn.addEventListener('click', openCloak);
-cloakClose.addEventListener('click', closeCloak);
-cloakQuick.addEventListener('click', ()=>{ openCloak(); setTimeout(()=>closeCloak(), 600); });
+/* ----------------- auth demo ----------------- */
+$('#login-toggle').addEventListener('click', ()=> $('#login-screen').style.display = 'flex');
+$('#show-signup').addEventListener('click', ()=> { $('#login-screen').style.display='none'; $('#signup-screen').style.display='flex'; });
+$('#back-login').addEventListener('click', ()=> { $('#signup-screen').style.display='none'; $('#login-screen').style.display='flex'; });
 
-/* ----------------- LOGIN / AUTH (client only) ----------------- */
-const loginScreen = qsel('#login-screen');
-const signupScreen = qsel('#signup-screen');
-const loginToggle = qsel('#login-toggle');
-const showSignupBtn = qsel('#show-signup');
-const backLoginBtn = qsel('#back-login');
-const loginBtn = qsel('#login-btn');
-const createAccountBtn = qsel('#create-account');
-
-loginToggle.addEventListener('click', ()=> { loginScreen.style.display='flex' });
-showSignupBtn.addEventListener('click', ()=> { loginScreen.style.display='none'; signupScreen.style.display='flex' });
-backLoginBtn.addEventListener('click', ()=> { signupScreen.style.display='none'; loginScreen.style.display='flex' });
-
-async function sha256hex(str){
-  const enc = new TextEncoder(); const data = enc.encode(str); const hash = await crypto.subtle.digest('SHA-256', data);
-  return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');
-}
+async function sha256hex(str){ const enc = new TextEncoder(); const data = enc.encode(str); const hash = await crypto.subtle.digest('SHA-256', data); return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');}
 function getAccounts(){ return JSON.parse(localStorage.getItem('accounts')||'{}') }
 
-createAccountBtn.addEventListener('click', async ()=>{
-  const u = qsel('#signup-username').value.trim(); const p = qsel('#signup-password').value;
-  if(!u||!p){ qsel('#signup-error').textContent='Fill both fields'; qsel('#signup-error').style.display='block'; return; }
-  const accounts = getAccounts(); if(accounts[u]){ qsel('#signup-error').textContent='Username exists'; qsel('#signup-error').style.display='block'; return; }
-  const h = await sha256hex(p); accounts[u]=h; localStorage.setItem('accounts', JSON.stringify(accounts)); alert('Account created — login now'); signupScreen.style.display='none'; loginScreen.style.display='flex';
+$('#create-account').addEventListener('click', async ()=>{
+  const u = $('#signup-username').value.trim(); const p = $('#signup-password').value;
+  if(!u||!p){ $('#signup-error').textContent='Fill both fields'; $('#signup-error').style.display='block'; return; }
+  const accounts = getAccounts(); if(accounts[u]){ $('#signup-error').textContent='Username exists'; $('#signup-error').style.display='block'; return; }
+  const h = await sha256hex(p); accounts[u]=h; localStorage.setItem('accounts', JSON.stringify(accounts)); alert('Account created — login now'); $('#signup-screen').style.display='none'; $('#login-screen').style.display='flex';
 });
-
-loginBtn.addEventListener('click', async ()=>{
-  const u = qsel('#login-username').value.trim(); const p = qsel('#login-password').value;
-  const accounts = getAccounts(); const h = await sha256hex(p);
-  if(!accounts[u] || accounts[u]!==h){ qsel('#login-error').textContent='Invalid'; qsel('#login-error').style.display='block'; return; }
-  qsel('#login-error').style.display='none';
-  loginScreen.style.display='none';
-  grantAccess(u);
+$('#login-btn').addEventListener('click', async ()=>{
+  const u = $('#login-username').value.trim(); const p = $('#login-password').value; const accounts = getAccounts(); const h = await sha256hex(p);
+  if(!accounts[u] || accounts[u]!==h){ $('#login-error').textContent='Invalid'; $('#login-error').style.display='block'; return; }
+  $('#login-error').style.display='none'; $('#login-screen').style.display='none'; grantAccess(u);
 });
-
-function grantAccess(username){
-  qsel('#profile-name').textContent = username;
-  qsel('#avatar').textContent = username[0].toUpperCase();
-  qsel('#access-granted')?.remove?.(); // optional visual
-}
+function grantAccess(username){ $('#profile-name').textContent = username; $('#avatar').textContent = username[0].toUpperCase(); }
 
 /* ----------------- UI wiring ----------------- */
-qsel('#search-games').addEventListener('input', (e)=> renderGames(categoryFilter.value || '', e.target.value));
-categoryFilter.addEventListener('change', ()=> renderGames(categoryFilter.value || '', qsel('#search-games').value));
-qsel('#show-faves').addEventListener('click', ()=> { renderGames('__FAVS__'); });
-qsel('#clear-faves').addEventListener('click', ()=> { prefs.favs=[]; localStorage.setItem('pref-favs', JSON.stringify(prefs.favs)); renderGames(); renderFavList(); });
+$('#search-games').addEventListener('input', e => renderGames(categoryFilter.value || '', e.target.value));
+categoryFilter.addEventListener('change', ()=> renderGames(categoryFilter.value || '', $('#search-games').value));
+$('#show-faves').addEventListener('click', ()=> renderGames('__FAVS__'));
+$('#clear-faves').addEventListener('click', ()=> { prefs.favs=[]; localStorage.setItem('pref-favs', JSON.stringify(prefs.favs)); renderGames(); renderFavList(); });
 
-/* ----------------- INIT render ----------------- */
+/* ----------------- init ----------------- */
 (function init(){
-  CATALOG = buildCatalog();
+  buildCatalog();
   renderCategories();
   renderGames();
   renderFavList();
-  // insert categories to filter select already done in renderCategories()
-  // apply saved proxy url value
   proxyUrlInput.value = prefs.proxyUrl || '';
+  // ensure the loader elements present and ready
 })();
 </script>
 </body>
