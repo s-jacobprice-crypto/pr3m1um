@@ -1,21 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>JACOB'S ARCADE V2</title>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
 :root{--neon-blue:#00e6ff;--neon-green:#7cff00;--bg-color:#05030a;--card-bg:rgba(255,255,255,0.02);--text:#e6faff}
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%;font-family:"Press Start 2P",Arial,sans-serif;color:var(--text);background:var(--bg-color);overflow-x:hidden}
-header{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;background:rgba(0,0,0,0.25);border-bottom:1px solid rgba(255,255,255,0.04);}
+header{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;background:rgba(0,0,0,0.25);border-bottom:1px solid rgba(255,255,255,0.04);position:relative;z-index:30}
 .logo{width:48px;height:48px;background:linear-gradient(135deg,var(--neon-blue),var(--neon-green));border-radius:8px;display:flex;align-items:center;justify-content:center;color:#001}
 .games{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin:24px}
 .game-card{background:var(--card-bg);padding:12px;border-radius:8px;text-align:center;border:1px solid rgba(255,255,255,0.03);transition:transform .15s,box-shadow .15s}
 .game-card:hover{transform:translateY(-6px) scale(1.02);box-shadow:0 8px 24px rgba(0,200,255,0.06)}
 .card-buttons{margin-top:6px;display:flex;flex-wrap:wrap;gap:4px;justify-content:center}
 button{font-size:10px;padding:6px 8px;cursor:pointer;border-radius:6px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--neon-blue);text-transform:uppercase}
+#deploy-proxy-btn{position:fixed;left:50%;top:8px;transform:translateX(-50%);z-index:40;padding:8px 12px;border-radius:8px;background:linear-gradient(90deg,var(--neon-blue),var(--neon-green));color:#001;font-weight:700;cursor:pointer;border:none}
+#proxy-overlay{position:fixed;inset:0;background:#000;display:none;z-index:10000;align-items:stretch;justify-content:stretch}
+#proxy-iframe{width:100%;height:100%;border:0}
+#proxy-back{position:fixed;left:12px;top:12px;z-index:11000;border-radius:8px;padding:8px 10px;background:rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.06);cursor:pointer}
 #custom-panel{position:fixed;top:0;right:-360px;width:340px;height:100%;background:rgba(0,0,0,0.85);padding:18px;border-radius:10px 0 0 10px;box-shadow:-4px 0 20px rgba(0,0,0,0.5);transition:right .28s ease;z-index:1000}
 #custom-panel.open{right:0}
 .panel-section{margin-bottom:14px}
@@ -38,18 +42,28 @@ input[type=color],input[type=text],select{width:100%;padding:8px;border-radius:6
 </head>
 <body>
 <header>
-<div class="header-row">
-<div class="logo">J²</div>
-<div>
-<h1 style="font-size:16px;color:var(--neon-blue);letter-spacing:1px">JACOB'S ARCADE V2</h1>
-<div id="banner-text" style="font-size:10px;color:var(--neon-green);text-transform:uppercase">WELCOME</div>
-</div>
-</div>
-<div class="header-row">
-<div id="clock" style="font-size:12px;color:var(--neon-green);text-transform:uppercase">00:00:00</div>
-<button id="customize-btn">CUSTOMIZE</button>
-</div>
+  <div class="header-row">
+    <div class="logo">J²</div>
+    <div>
+      <h1 style="font-size:16px;color:var(--neon-blue);letter-spacing:1px">JACOB'S ARCADE V2</h1>
+      <div id="banner-text" style="font-size:10px;color:var(--neon-green);text-transform:uppercase">WELCOME</div>
+    </div>
+  </div>
+
+  <div class="header-row" style="gap:10px;">
+    <div id="clock" style="font-size:12px;color:var(--neon-green);text-transform:uppercase">00:00:00</div>
+    <button id="customize-btn">CUSTOMIZE</button>
+  </div>
 </header>
+
+<!-- Deploy Proxy Button (center top) -->
+<button id="deploy-proxy-btn" title="Deploy Proxy">DEPLOY PROXY</button>
+
+<!-- Proxy overlay (hidden until deploy clicked) -->
+<div id="proxy-overlay" aria-hidden="true">
+  <button id="proxy-back" title="Back to Arcade">BACK TO HOME</button>
+  <iframe id="proxy-iframe" src="" frameborder="0" sandbox="allow-same-origin allow-scripts allow-forms allow-popups"></iframe>
+</div>
 
 <!-- LOGIN + SIGNUP OVERLAY -->
 <div id="login-screen" style="position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:5000;display:flex;align-items:center;justify-content:center;flex-direction:column;color:white;font-family:'Press Start 2P';">
@@ -74,64 +88,64 @@ input[type=color],input[type=text],select{width:100%;padding:8px;border-radius:6
  ACCESS GRANTED
 </div>
 
-
 <div class="banner" id="custom-banner">Press PLAY to start a game — loading messages are chaotic!</div>
 
 <div style="display:flex;gap:18px">
-<div style="flex:1">
-<div class="search"><input id="search-games" type="text" placeholder="SEARCH GAMES..." style="width:100%;padding:8px;border-radius:6px"></div>
-<div class="games" id="games"></div>
-</div>
-<div id="custom-panel">
-<h3 style="color:var(--neon-green);margin-bottom:12px">CUSTOMIZE</h3>
-<div class="panel-section">
-<label>Theme Presets</label>
-<select id="theme-preset">
-<option value="neon">Neon (default)</option>
-<option value="retro">Retro</option>
-<option value="sunset">Sunset</option>
-</select>
-</div>
-<div class="panel-section">
-<label>Neon Color</label>
-<input type="color" id="neon-color" value="#00e6ff">
-</div>
-<div class="panel-section">
-<label>Background Color</label>
-<input type="color" id="bg-color" value="#05030a">
-</div>
-<div class="panel-section">
-<label>Grid Size</label>
-<select id="grid-size"><option value="small">Small cards</option><option value="medium" selected>Medium cards</option><option value="large">Large cards</option></select>
-</div>
-<div class="panel-section">
-<label><input type="checkbox" id="toggle-clock" checked> Show Live Clock</label>
-<label><input type="checkbox" id="toggle-verse" checked> Show Verse Box</label>
-</div>
-<div class="panel-section">
-<label>Custom Banner Text</label>
-<input type="text" id="banner-input" placeholder="Type a banner message...">
-<button id="save-banner" class="small">Save Banner</button>
-</div>
-<div class="panel-section">
-<label>Favorites</label>
-<div style="font-size:12px">Click the ⭐ on any game card to favorite it. Use the filter below.</div>
-<button id="show-faves" class="small">Show Favorites</button>
-<button id="clear-faves" class="small">Clear Favorites</button>
-</div>
-<div class="panel-section">
-<label>Reset to defaults</label>
-<button id="reset-prefs" class="small">RESET</button>
-</div>
-</div>
+  <div style="flex:1">
+    <div class="search"><input id="search-games" type="text" placeholder="SEARCH GAMES..." style="width:100%;padding:8px;border-radius:6px"></div>
+    <div class="games" id="games"></div>
+  </div>
+
+  <div id="custom-panel">
+    <h3 style="color:var(--neon-green);margin-bottom:12px">CUSTOMIZE</h3>
+    <div class="panel-section">
+      <label>Theme Presets</label>
+      <select id="theme-preset">
+        <option value="neon">Neon (default)</option>
+        <option value="retro">Retro</option>
+        <option value="sunset">Sunset</option>
+      </select>
+    </div>
+    <div class="panel-section">
+      <label>Neon Color</label>
+      <input type="color" id="neon-color" value="#00e6ff">
+    </div>
+    <div class="panel-section">
+      <label>Background Color</label>
+      <input type="color" id="bg-color" value="#05030a">
+    </div>
+    <div class="panel-section">
+      <label>Grid Size</label>
+      <select id="grid-size"><option value="small">Small cards</option><option value="medium" selected>Medium cards</option><option value="large">Large cards</option></select>
+    </div>
+    <div class="panel-section">
+      <label><input type="checkbox" id="toggle-clock" checked> Show Live Clock</label>
+      <label><input type="checkbox" id="toggle-verse" checked> Show Verse Box</label>
+    </div>
+    <div class="panel-section">
+      <label>Custom Banner Text</label>
+      <input type="text" id="banner-input" placeholder="Type a banner message...">
+      <button id="save-banner" class="small">Save Banner</button>
+    </div>
+    <div class="panel-section">
+      <label>Favorites</label>
+      <div style="font-size:12px">Click the ⭐ on any game card to favorite it. Use the filter below.</div>
+      <button id="show-faves" class="small">Show Favorites</button>
+      <button id="clear-faves" class="small">Clear Favorites</button>
+    </div>
+    <div class="panel-section">
+      <label>Reset to defaults</label>
+      <button id="reset-prefs" class="small">RESET</button>
+    </div>
+  </div>
 </div>
 
 <div class="loading-overlay" id="loading-overlay" aria-hidden="true">
-<div class="loading-box" role="status" aria-live="polite">
-<div class="loading-message" id="loading-message">Loading...</div>
-<div class="progress"><i id="loading-bar"></i></div>
-<div style="margin-top:10px;font-size:11px;color:rgba(255,255,255,0.7)">This sometimes takes 0.5–3s (simulated)</div>
-</div>
+  <div class="loading-box" role="status" aria-live="polite">
+    <div class="loading-message" id="loading-message">Loading...</div>
+    <div class="progress"><i id="loading-bar"></i></div>
+    <div style="margin-top:10px;font-size:11px;color:rgba(255,255,255,0.7)">This sometimes takes 0.5–3s (simulated)</div>
+  </div>
 </div>
 
 <div class="footer">FOLLOW — YOUTUBE / TWITCH / TIKTOK</div>
@@ -397,9 +411,31 @@ function buildCard(fname){
  card.innerHTML = `<div style="font-size:12px">${title}</div>`;
  const btns = document.createElement('div'); btns.className='card-buttons';
  const play = document.createElement('button'); play.textContent='PLAY';
- play.onclick = ()=> playGame(id);
+ // PLAY -> opens in same tab (navigate)
+ play.onclick = ()=> { window.location.href = id; };
+
  const openBlank = document.createElement('button'); openBlank.textContent='ABOUT:BLANK';
- openBlank.onclick = ()=> window.open(id,'_blank');
+ // ABOUT:BLANK -> open a new about:blank window and inject iframe with blob (cloaked)
+ openBlank.onclick = async (e)=> {
+   e.stopPropagation();
+   try {
+     const w = window.open('about:blank');
+     if(!w) return alert('Popup blocked. Allow popups for this site to use about:blank open.');
+     const res = await fetch(id);
+     const txt = await res.text();
+     const blob = new Blob([txt], {type:'text/html'});
+     const blobUrl = URL.createObjectURL(blob);
+     // write minimal HTML that loads the blob-url inside a full iframe
+     const doc = w.document;
+     doc.open();
+     doc.write(`<!doctype html><html><head><meta charset="utf-8"><title>${title}</title><style>html,body{height:100%;margin:0;background:#000}iframe{border:0;width:100%;height:100%}</style></head><body><iframe src="${blobUrl}" sandbox="allow-same-origin allow-scripts allow-forms allow-popups"></iframe></body></html>`);
+     doc.close();
+   } catch(err) {
+     console.error(err);
+     alert('Failed to open ABOUT:BLANK');
+   }
+ };
+
  const blob = document.createElement('button'); blob.textContent='BLOB LINK';
  blob.onclick = ()=> fetch(id).then(r=>r.text()).then(t=>{const blob2=new Blob([t],{type:'text/html'});window.open(URL.createObjectURL(blob2),'_blank')});
  btns.append(play,openBlank,blob);
@@ -411,8 +447,11 @@ function buildCard(fname){
 function renderGames(filter=''){
  gamesDiv.innerHTML='';
  let list = GAME_FILES.slice();
- if(filter==='favs') list = list.filter(x=>prefs.favs.includes(x));
- list = list.filter(f=>f.toLowerCase().includes(filter==='favs'? '': filter.toLowerCase()));
+ if(filter==='favs') {
+   list = list.filter(x=>prefs.favs.includes(x));
+ } else if (filter && typeof filter === 'string' && filter.trim() !== '') {
+   list = list.filter(f=>f.toLowerCase().includes(filter.toLowerCase()));
+ }
  list.forEach(f=> gamesDiv.appendChild(buildCard(f)));
  applyGrid();
 }
@@ -445,15 +484,15 @@ async function playGame(filename){
  // small pause to show 100%
  await wait(200);
  overlay.classList.remove('show'); overlay.setAttribute('aria-hidden','true');
- // finally open the game
- window.open(filename,'_blank');
+ // finally open the game (navigate in same tab)
+ window.location.href = filename;
 }
 
 // ----------------- CUSTOMIZATION BEHAVIOR -----------------
 const customizeBtn = document.getElementById('customize-btn');
 const customPanel = document.getElementById('custom-panel');
 customizeBtn.addEventListener('click', (e)=>{e.stopPropagation(); customPanel.classList.toggle('open')});
-document.addEventListener('click', ()=> customPanel.classList.remove('open'));
+document.addEventListener('click', (e)=> { if(!customPanel.contains(e.target) && e.target !== customizeBtn) customPanel.classList.remove('open') });
 
 // controls
 const neonInput = document.getElementById('neon-color');
@@ -510,6 +549,35 @@ if(prefs.showVerse){ verseBox = document.createElement('div'); verseBox.classNam
 toggleClock.checked = prefs.showClock; toggleVerse.checked = prefs.showVerse;
 toggleClock.addEventListener('change', ()=>{localStorage.setItem('pref-clock', toggleClock.checked); document.getElementById('clock').style.display = toggleClock.checked? 'block':'none'});
 toggleVerse.addEventListener('change', ()=>{localStorage.setItem('pref-verse', toggleVerse.checked); if(toggleVerse.checked && !verseBox){verseBox = document.createElement('div'); verseBox.className='banner'; verseBox.style.margin='12px 24px'; verseBox.style.fontSize='11px'; verseBox.textContent='THE LORD IS MY SHEPHERD; I SHALL NOT WANT - PSALM 23:1'; document.querySelector('body').insertBefore(verseBox, document.querySelector('.footer'))} else if(!toggleVerse.checked && verseBox){verseBox.remove(); verseBox=null}});
+
+// ----------------- PROXY / DEPLOY BUTTON -----------------
+const deployBtn = document.getElementById('deploy-proxy-btn');
+const proxyOverlay = document.getElementById('proxy-overlay');
+const proxyIframe = document.getElementById('proxy-iframe');
+const proxyBack = document.getElementById('proxy-back');
+// target proxy URL (user-specified)
+const PROXY_URL = 'https://tkmafsenoo.coaching2lead.com';
+
+deployBtn.addEventListener('click', (e)=> {
+  e.stopPropagation();
+  // show overlay and load proxy (same tab takeover visually)
+  proxyIframe.src = PROXY_URL;
+  proxyOverlay.style.display = 'flex';
+  proxyOverlay.setAttribute('aria-hidden','false');
+  // optionally hide header/footer/panel interactions while proxy active
+  // (we keep them in DOM but visually behind the overlay)
+});
+
+proxyBack.addEventListener('click', (e)=> {
+  e.stopPropagation();
+  // hide overlay and clear iframe src to free resources
+  proxyIframe.src = 'about:blank';
+  proxyOverlay.style.display = 'none';
+  proxyOverlay.setAttribute('aria-hidden','true');
+});
+
+// also close proxy with Escape key
+document.addEventListener('keydown', (e)=> { if(e.key === 'Escape' && proxyOverlay.style.display === 'flex') { proxyBack.click(); }});
 
 // ----------------- INIT -----------------
 (function init(){
